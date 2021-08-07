@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-
+from typing import List
 
 class Species(BaseModel):
     """
@@ -10,8 +10,8 @@ class Species(BaseModel):
     name: str
     family: str
     native: bool
-    common_names: [str]
+    common_names: List[str]
     notifiable: bool  # whether or not the gov needs to know!
     species_name: str
-    control_methods: [str]
-    replacement_species: [str]
+    control_methods: List[str]
+    replacement_species: List[str]

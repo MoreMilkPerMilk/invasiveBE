@@ -12,4 +12,4 @@ class WeedInstance(BaseModel):
     removal_date: date
 
     replaced: bool
-    replaced_species: int  # lookup via Species model
+    replaced_species_id: int  # lookup via Species model
