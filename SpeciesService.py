@@ -39,16 +39,14 @@ def get_govt_data_and_populate():
         species_db.insert_one(Species(**entry).dict())
 
 
-def get_all_species_data() -> List[Species]:
-    client = DatabaseService.connect_to_mongodb()
-    species_db = client['species']
+def get_all_species_data(species_db: Collection) -> List[Species]:
     result = []
     for species in species_db.find():
         result.append(Species(**species))
     return result
 
 
-def get_species_by_id(species_db: Collection, id: int) -> Species:
+def get_species_by_id(species_db: Collection, id: int):
     """
     Find plant based on specific id (brisbane weed database)
     """
@@ -56,14 +54,14 @@ def get_species_by_id(species_db: Collection, id: int) -> Species:
     return Species(**species_dict)
 
 
-def get_species_by_name(species_db: Collection, name: str) -> [Species]:
+def get_species_by_name(species_db: Collection, name: str):
     """
     Fuzzy search finding of species entries by name
     """
     results = []
     for species in species_db.find():
         if fuzz.ratio(name, species['name']) > 75:  # fuzzy search threshold
-            results.append(species)
+            results.append(Species(**species))
 
     return results
 
@@ -71,4 +69,4 @@ def get_species_by_name(species_db: Collection, name: str) -> [Species]:
 # get_govt_data_and_populate() ## DO NOT RUN THIS UNLESS REPOPULATING THE WHOLE DB
 # print(get_all_species_data())
 # print(get_species_by_id(species_db, 73))
-print(get_species_by_name(species_db, "chinee apple"))
+# print(get_species_by_name(species_db, "chinee apple"))

@@ -6,7 +6,9 @@ import uvicorn
 from fastapi import FastAPI, Response, status
 
 import LocationService
+import SpeciesService
 from DatabaseService import *
+from SpeciesService import *
 from Models.Location import Location
 from Models.Species import Species
 
@@ -84,9 +86,23 @@ def delete_location(location: Location):
         print("-" * 10)
         return Response(status_code=status.HTTP_200_OK)
 
+
 @app.get("/species")
-def get_species(species: Species):
-    pass
+def get_species():
+    return [x.dict() for x in get_all_species_data(species_db)]
+
+
+@app.get("/species/")
+def get_species_by_id(species_id: int = -1, species_name: str = ""):
+    if species_id != -1:
+        return SpeciesService.get_species_by_id(species_db, species_id).dict()
+    elif species_name != "":
+        return [x.dict() for x in SpeciesService.get_species_by_name(species_db, species_name)]
+
+    return Response(status_code=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+# @app.get("/species/")
+# def get_species_by_name() -> []:
 
 # @app.get("/locations/{radius}")
 # def get_nearby_locations(radius: float, response: Response, lat: Optional[float] = None, long: Optional[float] = None, addr: Optional[str] = None):
