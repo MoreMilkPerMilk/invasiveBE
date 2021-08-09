@@ -6,8 +6,9 @@ class Species(BaseModel):
     A model representing a particular species of weed.
     Adapted from the api format of https://weeds.brisbane.qld.gov.au
     """
-    id: int
+    _id: int
     name: str
+    info: str  # paragraph of extra info about the plant
     family: str
     native: bool
     common_names: List[str]

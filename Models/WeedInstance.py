@@ -1,15 +1,16 @@
 from pydantic import BaseModel
 from uuid import UUID
 from datetime import date
+from typing import Optional
 
 
 class WeedInstance(BaseModel):
-    instance_id: UUID  # id for this specific instance
+    _id: str  # id for this specific instance
     species_id: int  # lookup via Species model
-    discovery_date: date
+    discovery_date: str
 
     removed: bool
-    removal_date: date
+    removal_date: Optional[str]
 
     replaced: bool
-    replaced_species_id: int  # lookup via Species model
+    replaced_species: Optional[str]  # lookup via Species model

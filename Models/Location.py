@@ -1,15 +1,15 @@
 from uuid import UUID
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 from Models.WeedInstance import WeedInstance
 
 
 class Location(BaseModel):
-    location_id: UUID
+    _id: str
     name: str
-    lat: float
-    long: float
-    weeds_present: List[WeedInstance]
+    lat: Optional[float] = None
+    long: Optional[float] = None
+    weeds_present: Optional[List[WeedInstance]] = []
 
 
 
