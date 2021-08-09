@@ -8,6 +8,7 @@ from fastapi import FastAPI, Response, status
 import LocationService
 from DatabaseService import *
 from Models.Location import Location
+from Models.Species import Species
 
 app = FastAPI()
 client = connect_to_mongodb()
@@ -83,6 +84,9 @@ def delete_location(location: Location):
         print("-" * 10)
         return Response(status_code=status.HTTP_200_OK)
 
+@app.get("/species")
+def get_species(species: Species):
+    pass
 
 # @app.get("/locations/{radius}")
 # def get_nearby_locations(radius: float, response: Response, lat: Optional[float] = None, long: Optional[float] = None, addr: Optional[str] = None):

@@ -2,3 +2,5 @@ fastapi
 uvicorn
 pymongo
 geopy
+fuzzywuzzy
+python-Levenshtein
