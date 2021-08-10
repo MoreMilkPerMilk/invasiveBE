@@ -12,7 +12,7 @@ def get_lat_long_from_address(address: str) -> (float, float):
     lat, long = None, None
     try:
         lat, long = loc.latitude, loc.longitude
-    except:
+    except AttributeError:
         log.error(f"Latitude and Longitude couldn't be found for addr:{address}")
     return lat, long
 
