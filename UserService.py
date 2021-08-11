@@ -26,6 +26,7 @@ def create_person(users_db: Collection, person: Person) -> Person:
     previous_person = users_db.find_one({"person_id": person.person_id})
     if previous_person is None:
         users_db.insert_one(person.dict())
+        return person
     else:
         return previous_person
 
@@ -60,12 +61,12 @@ person2 = {
     "count_identified": 69,
     "previous_tags": []
 }
-delete_person_by_id(db, person['person_id'])
-delete_person_by_id(db, person2['person_id'])
-create_person(db, Person(**person))
-create_person(db, Person(**person2))
-print(get_all_users(users_db=db))
-print(get_person_by_id(db, person['person_id']))
+# delete_person_by_id(db, person['person_id'])
+# delete_person_by_id(db, person2['person_id'])
+# create_person(db, Person(**person))
+# create_person(db, Person(**person2))
+# print(get_all_users(users_db=db))
+# print(get_person_by_id(db, person['person_id']))
 
 weed1 = {
     "species_id": 78,
@@ -73,7 +74,7 @@ weed1 = {
     "removed": False,
     "replaced": False
 }
-update_person_identifications(db, person["person_id"], WeedInstance(**weed1))
-print(get_person_by_id(db, person['person_id']))
+# update_person_identifications(db, person["person_id"], WeedInstance(**weed1))
+# print(get_person_by_id(db, person['person_id']))
 
 # get_person_by_id()
