@@ -135,20 +135,6 @@ def delete_user(person_id: int):
 def update_user(person_id: int, weed_instance: WeedInstance):
     UserService.update_person_identifications(users_db, person_id, weed_instance)
 
-# @app.get("/species/")
-# def get_species_by_name() -> []:
-
-# @app.get("/locations/{radius}")
-# def get_nearby_locations(radius: float, response: Response, lat: Optional[float] = None, long: Optional[float] = None, addr: Optional[str] = None):
-#     """
-#     Return locations that are within a given radius (m). Supply either Lat/Long or Address. Lat/Long is prioritised.
-#     """
-#     if addr is not None:
-#         lat, long = LocationService.get_lat_long_from_address(addr)
-#         if (lat, long) == (None, None):
-#             response.status_code = status.HTTP_400_BAD_REQUEST
-#     else:
-
 
 if __name__ == '__main__':
     uvicorn.run("BackendController:app", host='0.0.0.0', port=8000, reload=True)

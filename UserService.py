@@ -65,7 +65,7 @@ person2 = {
 # delete_person_by_id(db, person2['person_id'])
 # create_person(db, Person(**person))
 # create_person(db, Person(**person2))
-# print(get_all_users(users_db=db))
+print(get_all_users(users_db=db))
 # print(get_person_by_id(db, person['person_id']))
 
 weed1 = {

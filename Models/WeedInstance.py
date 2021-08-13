@@ -1,3 +1,5 @@
+import uuid
+
 from pydantic import BaseModel
 from uuid import UUID
 from datetime import date
@@ -6,6 +8,8 @@ from typing import Optional
 
 class WeedInstance(BaseModel):
     _id: str  # id for this specific instance
+    uuid: uuid.UUID
+    image_bytes: bytes
     species_id: int  # lookup via Species model
     discovery_date: str
 

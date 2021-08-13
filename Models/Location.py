@@ -1,3 +1,4 @@
+import uuid
 from uuid import UUID
 from pydantic import BaseModel
 from typing import List, Optional
@@ -11,6 +12,15 @@ class Location(BaseModel):
     long: Optional[float] = None
     weeds_present: Optional[List[WeedInstance]] = []
 
+    def add_weed(self, weed_instance: WeedInstance):
+        present = False
+        for weed in self.weeds_present:
+            if weed.uuid == weed_instance.uuid:
+                present = True
+                break
+
+        if not present:
+            self.weeds_present.append(weed_instance)
 
 
 
