@@ -7,7 +7,7 @@ from Models.User import Person
 from Models.WeedInstance import WeedInstance
 
 
-def get_all_users(users_db: Collection) -> [Person]:
+def get_all(users_db: Collection) -> [Person]:
     return [Person(**x) for x in users_db.find()]
 
 
@@ -43,37 +43,37 @@ def delete_person_by_id(users_db: Collection, id: int):
     users_db.delete_many({"person_id": id})
 
 
-client = DatabaseService.connect_to_mongodb()
-db = client['users']
-person = {
-    "person_id": 0,
-    "first_name": "Hamish",
-    "last_name": "Bultitude",
-    "date_joined": "2021-08-10",
-    "count_identified": 40,
-    "previous_tags": []
-}
-person2 = {
-    "person_id": 1,
-    "first_name": "Joe",
-    "last_name": "Bloggs",
-    "date_joined": "2000-2-3",
-    "count_identified": 69,
-    "previous_tags": []
-}
+# client = DatabaseService.connect_to_mongodb()
+# db = client['users']
+# person = {
+#     "person_id": 0,
+#     "first_name": "Hamish",
+#     "last_name": "Bultitude",
+#     "date_joined": "2021-08-10",
+#     "count_identified": 40,
+#     "previous_tags": []
+# }
+# person2 = {
+#     "person_id": 1,
+#     "first_name": "Joe",
+#     "last_name": "Bloggs",
+#     "date_joined": "2000-2-3",
+#     "count_identified": 69,
+#     "previous_tags": []
+# }
 # delete_person_by_id(db, person['person_id'])
 # delete_person_by_id(db, person2['person_id'])
 # create_person(db, Person(**person))
 # create_person(db, Person(**person2))
-print(get_all_users(users_db=db))
+# print(get_all(users_db=db))
 # print(get_person_by_id(db, person['person_id']))
 
-weed1 = {
-    "species_id": 78,
-    "discovery_date": "2000-01-01",
-    "removed": False,
-    "replaced": False
-}
+# weed1 = {
+#     "species_id": 78,
+#     "discovery_date": "2000-01-01",
+#     "removed": False,
+#     "replaced": False
+# }
 # update_person_identifications(db, person["person_id"], WeedInstance(**weed1))
 # print(get_person_by_id(db, person['person_id']))
 

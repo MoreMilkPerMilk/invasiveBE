@@ -2,7 +2,7 @@ import json
 import pymongo
 
 def connect_to_mongodb():
-    with open('cred.json') as f:
+    with open('../cred.json') as f:
         cred = json.load(f)
         user = cred['user']
         password = cred['password']

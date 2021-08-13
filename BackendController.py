@@ -65,7 +65,7 @@ def get_species_by_id(species_id: int = -1, species_name: str = ""):
 
 @app.get("/users", response_model=List[Person])
 def get_all_users():
-    return UserService.get_all_users(users_db)
+    return UserService.get_all(users_db)
 
 
 @app.get("/users/", response_model=Person)
