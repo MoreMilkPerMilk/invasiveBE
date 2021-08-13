@@ -39,7 +39,7 @@ def get_govt_data_and_populate():
         species_db.insert_one(Species(**entry).dict())
 
 
-def get_all_species_data(species_db: Collection) -> List[Species]:
+def get_all(species_db: Collection) -> List[Species]:
     result = []
     for species in species_db.find():
         result.append(Species(**species))

@@ -31,13 +31,7 @@ def get_all_locations():
     """
     Return all locations that exist within the databases
     """
-    result = list()
-    for item in loc_db.find():
-        try:
-            result.append(Location(**item))
-        except:
-            result.append(item)
-    return [x.dict() for x in result]
+    return LocationService.get_all(loc_db)
 
 
 @app.post("/locations/add")
@@ -46,54 +40,17 @@ def add_location(location: Location):
     Adds/Updates a location. Supply address name or lat/long.
     If lat/long already exist, merge the two lists of weeds.
     """
-    if (location.lat, location.long) == (None, None):
-        lat, long = LocationService.get_lat_long_from_address(location.name)
-        if (lat, long) == (None, None):
-            return Response(content="Lat/Long not found for supplied address", status_code=500)
-        else:
-            location.lat, location.long = lat, long
-
-    key = {'lat': location.lat, 'long': location.long}
-    action = "inserted"
-    # get the weeds already present at this location
-    old_loc = loc_db.find_one(key)
-    if old_loc is not None:
-        action = "updated"
-        old_loc = Location(**old_loc)
-        previous_weeds = old_loc.weeds_present
-        location.weeds_present.extend(previous_weeds)
-
-    # update the location if it is already present within the DB
-    id = loc_db.update(key, location.dict(), upsert=True)
-    print("+" * 10)
-    print(action)
-    p.pprint(location.dict())
-    print("+" * 10)
+    return LocationService.add(loc_db, location)
 
 
 @app.post("/locations/delete")
 def delete_location(location: Location):
-    if (location.lat, location.long) == (None, None):
-        lat, long = LocationService.get_lat_long_from_address(location.name)
-        if (lat, long) == (None, None):
-            return Response(content="Lat/Long not found for supplied address", status_code=500)
-        else:
-            location.lat, location.long = lat, long
-    key = {'lat': location.lat, 'long': location.long}
-    deleted_count = loc_db.delete_one(key).deleted_count
-    if deleted_count == 0:
-        return Response(status_code=status.HTTP_204_NO_CONTENT)
-    else:
-        print("-" * 10)
-        print("deleted")
-        p.pprint(location.dict())
-        print("-" * 10)
-        return Response(status_code=status.HTTP_200_OK)
+    return LocationService.delete(loc_db, location)
 
 
 @app.get("/species")
 def get_species():
-    return [x.dict() for x in get_all_species_data(species_db)]
+    return [x.dict() for x in SpeciesService.get_all(species_db)]
 
 
 @app.get("/species/")
