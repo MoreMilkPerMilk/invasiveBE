@@ -17,7 +17,8 @@ from Models.Species import Species
 
 app = FastAPI()
 client = connect_to_mongodb()
-p = pprint.PrettyPrinter(sort_dicts=False)
+# p = pprint.PrettyPrinter(sort_dicts=False)
+p = pprint.PrettyPrinter()
 log = logging.getLogger("location-logger")
 loc_db = client['locations']
 species_db = client['species']
@@ -93,5 +94,10 @@ def update_user(person_id: int, weed_instance: WeedInstance):
     UserService.update_person_identifications(users_db, person_id, weed_instance)
 
 
+@app.get("/hamish")
+def hamish():
+    return "hamish"
+
+
 if __name__ == '__main__':
-    uvicorn.run("BackendController:app", host='0.0.0.0', port=8000, reload=True)
+    uvicorn.run("BackendController:app", host='0.0.0.0', port=80, reload=True)

@@ -11,6 +11,7 @@ WEED_URL = "https://weeds.brisbane.qld.gov.au/api/weeds"
 client = DatabaseService.connect_to_mongodb()
 species_db = client['species']
 
+
 def get_govt_data_and_populate():
     client = DatabaseService.connect_to_mongodb()
     species_db = client['species']
@@ -66,7 +67,17 @@ def get_species_by_name(species_db: Collection, name: str):
     return results
 
 
-# get_govt_data_and_populate() ## DO NOT RUN THIS UNLESS REPOPULATING THE WHOLE DB
-# print(get_all_species_data())
-# print(get_species_by_id(species_db, 73))
-# print(get_species_by_name(species_db, "chinee apple"))
+def delete_all(species_db: Collection):
+    """
+    Delete all in the species table.
+    """
+    species_db.delete_many({})
+
+
+if __name__ == "__main__":
+    print("species service!")
+    # delete_all(species_db)
+    # get_govt_data_and_populate()
+    # print(get_all_species_data())
+    # print(get_species_by_id(species_db, 73))
+    # print(get_species_by_name(species_db, "chinee apple"))

@@ -9,7 +9,7 @@ from Models.WeedInstance import WeedInstance
 from Models.Location import Location
 
 log = logging.getLogger("location-logger")
-p = pprint.PrettyPrinter(sort_dicts=False)
+# p = pprint.PrettyPrinter(sort_dicts=False)
 
 
 def get_all(loc_db: Collection):
@@ -44,7 +44,7 @@ def add(loc_db: Collection, location: Location):
     id = loc_db.update(key, location.dict(), upsert=True)
     print("+" * 10)
     print(action)
-    p.pprint(location.dict())
+    # p.pprint(location.dict())
     print("+" * 10)
 
 
@@ -62,7 +62,7 @@ def delete(loc_db: Collection, location: Location):
     else:
         print("-" * 10)
         print("deleted")
-        p.pprint(location.dict())
+        # p.pprint(location.dict())
         print("-" * 10)
         return Response(status_code=status.HTTP_200_OK)
 

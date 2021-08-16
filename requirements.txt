@@ -4,3 +4,4 @@ pymongo
 geopy
 fuzzywuzzy
 python-Levenshtein
+requests
