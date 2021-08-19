@@ -11,6 +11,7 @@ from typing import List, Optional, Tuple
 from Models.WeedInstance import WeedInstance
 from Models.Location import Location
 from Models.Council import Council
+from Models.GeoJSONPoint import GeoJSONPoint
 
 log = logging.getLogger("location-logger")
 # p = pprint.PrettyPrinter(sort_dicts=False)
@@ -74,7 +75,7 @@ def get_all_in_council(location_collection: Collection, council: Council) -> Lis
 
     return [Location(**loc).dict() for loc in locations]
 
-def get_all_with_max_distance(location_collection: Collection, point: Point, max_distance: float):
+def get_all_with_max_distance(location_collection: Collection, point: GeoJSONPoint, max_distance: float):
     if point is None:
         log.error("get_all_in_radius() - point is none")
         return []

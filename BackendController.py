@@ -1,6 +1,5 @@
 import logging
 import pprint
-from typing import *
 
 import uvicorn
 from fastapi import FastAPI, Response, status
@@ -13,22 +12,28 @@ import CouncilService
 from DatabaseService import *
 from SpeciesService import *
 from CouncilService import *
+
+from typing import *
 from Models.User import Person
 from Models.WeedInstance import WeedInstance
 from Models.Location import Location
 from Models.Species import Species
 from Models.Council import Council
+from Models.GeoJSONPoint import GeoJSONPoint
 
 app = FastAPI()
 client = connect_to_mongodb()
 # p = pprint.PrettyPrinter(sort_dicts=False)
 p = pprint.PrettyPrinter()
 log = logging.getLogger("backend-logger")
-loc_db = client['locations2']
+loc_db = client['locations']
 species_db = client['species']
 weeds_db = client['weed_instances']
 users_db = client['users']
 council_db = client['councils']
+
+# loc_db.remove()
+# loc_db.remove( { } )
 
 LocationService.set_unique_keys(loc_db)
 CouncilService.set_unique_keys(council_db)
@@ -57,16 +62,15 @@ def add_location(location: Location):
     """
     return LocationService.add(loc_db, location)
 
-
 @app.post("/locations/delete")
 def delete_location(location: Location):
     """Delete a location"""
     return LocationService.delete(loc_db, location)
 
 @app.get("/locations/search")
-def location_search(point: Point, max_distance: float):
+def location_search(point: GeoJSONPoint, max_distance: float):
     """Get locations within max_distance of a point"""
-    return LocationService.get_all_in_max_distance(loc_db, point, max_distance)
+    return LocationService.get_all_with_max_distance(loc_db, point, max_distance)
 
 @app.get("/species")
 def get_species():
@@ -82,7 +86,6 @@ def get_species_by_id(species_id: int = -1, species_name: str = ""):
         return [x.dict() for x in SpeciesService.get_species_by_name(species_db, species_name)]
 
     return Response(status_code=status.HTTP_400_BAD_REQUEST)
-
 
 @app.get("/users", response_model=List[Person])
 def get_all_users():
