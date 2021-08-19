@@ -22,6 +22,7 @@ def set_unique_keys(location_collection: Collection):
     )
 
 def add_test_loc(location_collection: Collection) -> bool:
+    """Add 'St Lucia to location_collection"""
     point = Point((153.000042, -27.499159))
     pointJson = {"name": "St Lucia", "point": point, "weeds_present": []}
 
@@ -34,6 +35,7 @@ def add_test_loc(location_collection: Collection) -> bool:
     return True
 
 def add_loc(location_collection: Collection, location: Location):
+    """Add lcoation to location_collection"""
     try:
         location_collection.insert_one(location.dict())
     except Exception as e:
