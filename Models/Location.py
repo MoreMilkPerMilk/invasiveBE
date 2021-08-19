@@ -1,6 +1,7 @@
 import uuid
 from uuid import UUID
 from pydantic import BaseModel
+from geojson import Point
 from typing import List, Optional
 from Models.WeedInstance import WeedInstance
 
@@ -8,8 +9,9 @@ from Models.WeedInstance import WeedInstance
 class Location(BaseModel):
     _id: str
     name: str
-    lat: Optional[float] = None
-    long: Optional[float] = None
+    # lat: Optional[float] = None
+    # long: Optional[float] = None
+    point: Optional[dict] = None
     weeds_present: Optional[List[WeedInstance]] = []
 
     def add_weed(self, weed_instance: WeedInstance):

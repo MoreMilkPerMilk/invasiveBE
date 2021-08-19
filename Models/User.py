@@ -3,7 +3,7 @@
 from pydantic import BaseModel
 from typing import Optional, List
 from Models.WeedInstance import WeedInstance
-
+from Models.Location import Location
 
 class Person(BaseModel):
     person_id: int
@@ -12,6 +12,7 @@ class Person(BaseModel):
     date_joined: str
     count_identified: int
     previous_tags: List[WeedInstance]
+    location: Optional[Location] = None
 
     def add_identification(self, instance: WeedInstance):
         self.previous_tags.append(instance)

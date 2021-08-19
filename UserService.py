@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 from pymongo.collection import Collection
 
@@ -7,7 +7,7 @@ from Models.User import Person
 from Models.WeedInstance import WeedInstance
 
 
-def get_all(users_db: Collection) -> [Person]:
+def get_all(users_db: Collection) -> List[Person]:
     return [Person(**x) for x in users_db.find()]
 
 
@@ -17,7 +17,6 @@ def get_person_by_id(users_db: Collection, id: int) -> Optional[Person]:
         return None
     else:
         return Person(**person)
-
 
 def create_person(users_db: Collection, person: Person) -> Person:
     """
