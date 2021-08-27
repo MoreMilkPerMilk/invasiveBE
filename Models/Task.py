@@ -1,3 +1,4 @@
+from Models.GeoJSONMultiPolygon import GeoJSONMultiPolygon
 from pydantic import BaseModel
 
 from Models.Person import Person
@@ -12,4 +13,4 @@ class Task(BaseModel):
     task_name: str 
     person: Person
     task_description: str 
-    
+    task_polygon: GeoJSONMultiPolygon
