@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Request, HTTPException
 from typing import List
 
-from ..Models.Council import Council 
-from ..Models.Location import Location
-from ..Models.Person import Person
-from ..Models.WeedInstance import WeedInstance
+from Models.Council import Council 
+from Models.Location import Location
+from Models.Person import Person
+from Models.WeedInstance import WeedInstance
 
-import locations
+import routers.locations
 
 from db.session import database_instance
 

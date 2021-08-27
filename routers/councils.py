@@ -32,15 +32,19 @@ def get_councils(request: Request) -> List[Council]:
     return []
     return [Council(**c) for c in res]
 
-@router.get("/{council_id}", response_model=List[Council])
-def get_council(request: Request, council_id: int = None):
-    """Gets a council by a given id."""
+@router.get("/", response_model=List[Council])
+def get_council(request: Request, council_id: int = None, abbr_name: str = None):
+    """Gets a council by a given id or abbreviated name"""
     council_collection = request.app.state.db['councils']
-    res = council_collection.find_one({"_id": id})
+
+    if council_id is not None:
+        res = council_collection.find_one({"_id": id})
+    elif abbr_name is not None: 
+        res = 
     
     return None if res is None else Council(**res)
 
-@router.get("/{abb_name}", response_model=List[Council])
+@router.get("/", response_model=List[Council])
 def get_council_by_abbreviated_name(request: Request, abb_name: str = None):
     """Gets a council by it's abbreviated name."""
     council_collection = request.app.state.db['councils']

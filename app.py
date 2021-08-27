@@ -25,6 +25,11 @@ from Models.Council import Council
 from Models.GeoJSONPoint import GeoJSONPoint
 
 from routers import councils
+from routers import persons
+from routers import locations 
+from routers import species 
+from routers import persons 
+from routers import weeds 
 
 app = FastAPI()
 
@@ -36,6 +41,10 @@ async def startup():
     app.state.db = database().get_client()
 
 app.include_router(councils.router)
+app.include_router(locations.router)
+app.include_router(persons.router)
+app.include_router(species.router)
+# app.include_router(weeds.router)
 
 # SETUP UNIQUE KEYS
 # LocationService.set_unique_keys(locations_collection)
@@ -96,20 +105,7 @@ async def create_file(
 
 
 
-@app.get("/species")
-def get_species():
-    """Get all species"""
-    return [x.dict() for x in SpeciesService.get_all(species_db)]
 
-@app.get("/species/")
-def get_species_by_id(species_id: int = -1, species_name: str = ""):
-    """Get a species by species_id or species_name"""
-    if species_id != -1:
-        return SpeciesService.get_species_by_id(species_db, species_id).dict()
-    elif species_name != "":
-        return [x.dict() for x in SpeciesService.get_species_by_name(species_db, species_name)]
-
-    return Response(status_code=status.HTTP_400_BAD_REQUEST)
 
 if __name__ == '__main__':
     uvicorn.run("app:app", host='0.0.0.0', port=8080, reload=True)
