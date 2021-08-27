@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 
 from Models.Person import Person
+from Models.Location import Location
 
 class Task(BaseModel):
     """
@@ -10,4 +11,5 @@ class Task(BaseModel):
 
     task_name: str 
     person: Person
+    task_description: str 
     
