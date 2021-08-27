@@ -4,3 +4,6 @@ cred.json
 .DS_Store
 Tests/_trial_temp
 cred_old.json
+test.py
+files/*
+!files/.gitkeep 

@@ -1,4 +1,3 @@
-import pprint
 import logging
 import pymongo
 import uuid
@@ -20,7 +19,7 @@ log = logging.getLogger("location-logger")
 def set_unique_keys(weed_collection: Collection):
     """Sets weed_collection to be uniquely identified by 'species_id' ASC"""
     weed_collection.create_index(
-        [("name", pymongo.ASCENDING)],
+        [("species_id", pymongo.ASCENDING)],
         unique=True
     )
 

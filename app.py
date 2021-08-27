@@ -16,6 +16,7 @@ from SpeciesService import *
 from CouncilService import *
 
 from typing import *
+from db.database import database
 from Models.Person import Person
 from Models.WeedInstance import WeedInstance
 from Models.Location import Location
@@ -23,24 +24,23 @@ from Models.Species import Species
 from Models.Council import Council
 from Models.GeoJSONPoint import GeoJSONPoint
 
+from .routers import councils
+
 app = FastAPI()
-# client = connect_to_mongodb()
-# p = pprint.PrettyPrinter(sort_dicts=False)
+
 p = pprint.PrettyPrinter()
 log = logging.getLogger("backend-logger")
-loc_db = client['locations2']
-species_db = client['species']
-weeds_db = client['weed_instances']
-users_db = client['users']
-council_db = client['councils']
 
-# loc_db.remove()
-# loc_db.remove( { } )
+@app.on_event("startup")
+async def startup():
+    app.state.db = database().get_client()
+
+app.include_router(councils.router)
 
 # SETUP UNIQUE KEYS
-LocationService.set_unique_keys(loc_db)
-CouncilService.set_unique_keys(council_db)
-WeedInstanceService.set_unique_keys(weeds_db)
+LocationService.set_unique_keys(locations_collection)
+CouncilService.set_unique_keys(councils_collection)
+WeedInstanceService.set_unique_keys(weeds_collection)
 
 # @app.get("/locations", response_model=List[Location])
 @app.get("/locations", response_model=List[Location])
@@ -48,7 +48,7 @@ def get_all_locations():
     """
     Return all locations that exist within the databases
     """
-    return LocationService.get_all(loc_db)
+    return LocationService.get_all(locations_collection)
 
 @app.get("/location/", response_model=Location)
 def get_location_by_id(location_id: int = None):
@@ -56,7 +56,7 @@ def get_location_by_id(location_id: int = None):
     if location_id is None:
         return Response(status_code=status.HTTP_400_BAD_REQUEST)
 
-    return LocationService.get_by_id(loc_db, location_id).dict()
+    return LocationService.get_by_id(locations_collection, location_id).dict()
 
 @app.post("/locations/add")
 def add_location(location: Location):
@@ -64,17 +64,17 @@ def add_location(location: Location):
     Adds/Updates a location. Supply address name or lat/long.
     If lat/long already exist, merge the two lists of weeds.
     """
-    return LocationService.add(loc_db, location)
+    return LocationService.add(locations_collection, location)
 
 @app.post("/locations/delete")
 def delete_location(location: Location):
     """Delete a location"""
-    return LocationService.delete(loc_db, location)
+    return LocationService.delete(locations_collection, location)
 
 @app.get("/locations/search")
 def location_search(point: GeoJSONPoint, max_distance: float):
     """Get locations within max_distance of a point"""
-    return LocationService.get_all_with_max_distance(loc_db, point, max_distance)
+    return LocationService.get_all_with_max_distance(locations_collection, point, max_distance)
 
 @app.post("/weeds/add")
 # async def add_weed()
@@ -90,7 +90,7 @@ async def add_weed(weed_id: int, discovery_date: str, removed: bool,
                 "removed": removed, "removal_date": removal_date, "replaced": replaced, 
                 "replaced_species": replaced_species, "image_filename": image_filename})
 
-    return WeedInstanceService.add_weed(weeds_db, weed, file)
+    return WeedInstanceService.add_weed(weeds_collection, weed, file)
 
 @app.post("/weeds/tstfile")
 async def create_file(
@@ -178,35 +178,5 @@ def update_user(person_id: int, weed_instance: WeedInstance):
     """Update a user."""
     UserService.update_person_identifications(users_db, person_id, weed_instance)
 
-@app.get("/councils", response_model=List[Council])
-def get_councils():
-    """
-        Returns all councils in the database
-    """
-    return get_councils()
-
-@app.get("/councils/", response_model=List[Council])
-def get_council(council_id: int = None):
-    """Gets a council by a given id."""
-    return CouncilService.get_council_by_id(council_id) 
-
-@app.get("/council/locations", response_model=List[Location])
-def get_council_locations(council_id: int = None):
-    """Get locations that are within the Council boundary"""
-    council = CouncilService.get_council_by_id(council_id)
-    loc = LocationService.get_all_in_council(loc_db, council)    
-
-    if council is None or loc is None:
-        log.error(f"Council or loc is None")
-        return Response(status_code=status.HTTP_400_BAD_REQUEST)
-
-# g = CouncilService.get_council_from_location(council_db, Location(**{"name": "St Lucia", "weeds_present": [], "point": Point((153.000042,-27.499159))}))
-
-@app.get("/hamish")
-def hamish():
-    """Flutter"""
-    return "Flutter"
-
-
 if __name__ == '__main__':
-    uvicorn.run("BackendController:app", host='0.0.0.0', port=80, reload=True)
+    uvicorn.run("app:app", host='0.0.0.0', port=8080, reload=True)
