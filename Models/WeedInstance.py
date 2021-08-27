@@ -9,7 +9,6 @@ from typing import Optional
 class WeedInstance(BaseModel):
     _id: str  # id for this specific instance
     uuid: uuid.UUID
-    image_bytes: bytes
     species_id: int  # lookup via Species model
     discovery_date: str
 
@@ -18,3 +17,5 @@ class WeedInstance(BaseModel):
 
     replaced: bool
     replaced_species: Optional[str]  # lookup via Species model
+
+    image_filename: Optional[str]

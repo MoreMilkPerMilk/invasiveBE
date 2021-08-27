@@ -63,6 +63,7 @@ def get_council_by_id(council_collection: Collection, id: int = None):
 # def find_council_for_location(council_collection: Collection, point: Point) -> Council:
 #     council_collection.find
 
+# PURELY FOR INITIAL ADDITION TO COLLECTION
 def create_council_collections_from_geojson(council_collection: Collection, geojson_filename: str):
     """Adds Councils from geojson file converted from data.gov"""
     with open(geojson_filename, "r") as geojson_f:
@@ -94,6 +95,8 @@ def create_council_collections_from_geojson(council_collection: Collection, geoj
 
     # print("find")
     # print(get_all_councils(council_collection))
+
+# def create_suburb_collection
 
 
 # def create_council_collection(client):

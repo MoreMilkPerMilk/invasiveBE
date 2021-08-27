@@ -1,13 +1,15 @@
 import logging
 import pprint
+import uuid
 
 import uvicorn
-from fastapi import FastAPI, Response, status
+from fastapi import FastAPI, Response, status, File, UploadFile, Form, Depends
 
 import LocationService
 import SpeciesService
 import UserService
 import CouncilService
+import WeedInstanceService
 
 from DatabaseService import *
 from SpeciesService import *
@@ -22,11 +24,11 @@ from Models.Council import Council
 from Models.GeoJSONPoint import GeoJSONPoint
 
 app = FastAPI()
-client = connect_to_mongodb()
+# client = connect_to_mongodb()
 # p = pprint.PrettyPrinter(sort_dicts=False)
 p = pprint.PrettyPrinter()
 log = logging.getLogger("backend-logger")
-loc_db = client['locations']
+loc_db = client['locations2']
 species_db = client['species']
 weeds_db = client['weed_instances']
 users_db = client['users']
@@ -71,6 +73,59 @@ def delete_location(location: Location):
 def location_search(point: GeoJSONPoint, max_distance: float):
     """Get locations within max_distance of a point"""
     return LocationService.get_all_with_max_distance(loc_db, point, max_distance)
+
+@app.post("/weeds/add")
+# async def add_weed()
+async def add_weed(weed_id: int, discovery_date: str, removed: bool, 
+                        removal_date: Optional[str], replaced: bool, replaced_species: Optional[str], 
+                        image_filename: Optional[str], file: UploadFile = File(...)):
+    """Adds a weed instance"""
+    #for some reason can't use 
+
+# async def upload(user: User = Depends(), file: UploadFile = File(...)):
+
+    weed = WeedInstance({"weed_id": weed_id, "discovery_date": discovery_date, 
+                "removed": removed, "removal_date": removal_date, "replaced": replaced, 
+                "replaced_species": replaced_species, "image_filename": image_filename})
+
+    return WeedInstanceService.add_weed(weeds_db, weed, file)
+
+@app.post("/weeds/tstfile")
+async def create_file(
+    fileb: UploadFile = File(...), token: str = Form(...)
+):
+    # print(len(fileb.file_size))
+    # print(fileb)
+    print(token)
+    print(fileb.content_type)
+    return {
+        "file_size": len(fileb),
+        "token": token,
+        "fileb_content_type": fileb.content_type,
+    }
+
+@app.post("/files/")
+async def create_file(
+    fileb: UploadFile = File(...), token: str = Form(...)
+):
+    return {
+        "file_size": len(file),
+        "token": token,
+        "fileb_content_type": fileb.content_type,
+    }
+
+# @app.post("/uploadfile/")
+# async def create_upload_file(file: UploadFile = File(...)):
+#     print("got" + file.filename)
+#     new_name = uuid.uuid4()
+#     try:
+#         with open(f"files/{new_name}", "wb") as new_file:
+#             new_file.write(file.file.read())
+#     except:
+#         return False
+    # return {"filename": file.filename}
+
+
 
 @app.get("/species")
 def get_species():

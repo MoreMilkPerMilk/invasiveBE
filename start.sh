@@ -1,1 +1,1 @@
-uvicorn BackendController:app --host 0.0.0.0 --port 80 --reload
+uvicorn BackendController:app --host 0.0.0.0 --port 8080 --reload

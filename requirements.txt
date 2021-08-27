@@ -5,3 +5,4 @@ geopy
 fuzzywuzzy
 python-Levenshtein
 requests
+geojson
