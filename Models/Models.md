@@ -3,10 +3,10 @@
 ## Table of Contents
 
 - [Council](#council)
-- [Location](#getting_started)
-- [Species](#usage)
+- [Location](#location)
+- [Species](#species)
 - [User](#user)
-- [Community]
+- [Community](#community)
 
 ## Council <a name = "council"></a>
 
@@ -62,4 +62,4 @@
 - encapsulate the addition of multiple areas to a single community
 - maybe encapsulate that Councils are actually Communities, 
 and have communities as the main target which has a variable 
-which names whether something is a Council etc?
+which names whether something is a Council etc? 

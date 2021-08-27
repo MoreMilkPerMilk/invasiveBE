@@ -16,7 +16,7 @@ from SpeciesService import *
 from CouncilService import *
 
 from typing import *
-from Models.User import Person
+from Models.Person import Person
 from Models.WeedInstance import WeedInstance
 from Models.Location import Location
 from Models.Species import Species
@@ -37,8 +37,10 @@ council_db = client['councils']
 # loc_db.remove()
 # loc_db.remove( { } )
 
+# SETUP UNIQUE KEYS
 LocationService.set_unique_keys(loc_db)
 CouncilService.set_unique_keys(council_db)
+WeedInstanceService.set_unique_keys(weeds_db)
 
 # @app.get("/locations", response_model=List[Location])
 @app.get("/locations", response_model=List[Location])

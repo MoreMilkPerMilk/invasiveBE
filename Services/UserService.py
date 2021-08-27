@@ -1,11 +1,18 @@
-from typing import List, Optional
+import DatabaseService
+import pymongo
 
+from typing import List, Optional
 from pymongo.collection import Collection
 
-import DatabaseService
-from Models.User import Person
+from Models.Person import Person
 from Models.WeedInstance import WeedInstance
 
+def set_unique_keys(users_collection: Collection):
+    """Sets users_collection to be uniquely identified by 'person_id' ASC"""
+    users_collection.create_index(
+        [("person_id", pymongo.ASCENDING)],
+        unique=True
+    )
 
 def get_all(users_db: Collection) -> List[Person]:
     return [Person(**x) for x in users_db.find()]
