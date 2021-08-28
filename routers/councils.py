@@ -18,14 +18,27 @@ router = APIRouter(
 )
 
 @router.get("/peek", response_model=List[Council])
-def get_councils(request: Request) -> List[Council]:
+def peek_councils(request: Request) -> List[Council]:
     """
-        Returns councils in the database (MAX 5)
-        (VERRRY SLOW) -> don't use
+        Returns councils in the database (w/o polygon boundary as too large, request single council for boundary).
     """
     council_collection = request.app.state.db.data.councils
 
-    res = council_collection.find(limit=5) # five limit
+    res = council_collection.aggregate([
+        {
+            "$limit": 10
+        },
+        {
+            "$project": {
+                "_id": 1,
+                "name": 1,
+                "species_occuring": 1,
+                "lga_code": 1,
+                "abbreviated_name": 1,
+                "area_sqkm": 1
+            }
+        }
+    ])
 
     if res is None:
         raise HTTPException(404)

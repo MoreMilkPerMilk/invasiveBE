@@ -3,8 +3,6 @@ from fastapi import APIRouter, Request, HTTPException
 from typing import List
 from bson.objectid import ObjectId
 
-import pymongo
-
 from Models.Task import Task
 
 import routers.locations as locations

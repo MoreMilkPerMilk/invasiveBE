@@ -15,7 +15,7 @@ class Council(BaseModel):
     name: str
     # locations: List[Location] = [] #no longer
     species_occuring: Optional[List[Species]] = []
-    boundary: dict
+    boundary: Optional[dict]
     lga_code: int 
     abbreviated_name: str
     area_sqkm: float
