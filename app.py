@@ -11,6 +11,7 @@ from Models.Species import Species
 from Models.Council import Council
 from Models.GeoJSONPoint import GeoJSONPoint
 
+from routers import communities
 from routers import councils
 from routers import persons
 from routers import locations 
@@ -33,6 +34,7 @@ app.include_router(locations.router)
 app.include_router(persons.router)
 app.include_router(species.router)
 app.include_router(weeds.router)
+app.include_router(communities.router)
 
 # SETUP UNIQUE KEYS
 # LocationService.set_unique_keys(locations_collection)

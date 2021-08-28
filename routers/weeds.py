@@ -56,7 +56,7 @@ async def add_weed(request: Request, weed_id: int, discovery_date: str, removed:
             new_file.write(file.file.read())
 
         weed.image_filename = new_filename
-        weeds_collection.insert_one(weed.dict())
+        weeds_collection.insert_one(weed.dict(by_alias=True))
 
     except Exception as e:
         log.error(f"Failed to add weed - {e}")

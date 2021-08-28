@@ -39,32 +39,40 @@ def get_task_by_id(request: Request, _id: str = None):
     """
     tasks_collection = request.app.state.db.data.tasks 
 
-    res = tasks_collection.find({"_id", ObjectId(_id)})
+    res = tasks_collection.find_one({"_id": ObjectId(_id)})
+    # print(res)
 
     if res is None: 
         raise HTTPException(404)
 
     return Task(**res) #?
 
-@router.post("/add", response_model=Task)
+@router.post("/add")
 def add_task(request: Request, task: Task = None):
     """
         Add task to collection    
     """
     tasks_collection = request.app.state.db.data.tasks 
 
-    res = tasks_collection.insert_one(task.dict())
+    res = tasks_collection.insert_one(task.dict(by_alias=True))
 
     if res is None: 
+        raise HTTPException(404)
+
+    # return {"inserted_id": res.inserted_id}
+
+
+
+@router.post("/delete")
+def delete_task(request: Request, task_id: str = None):
+    """
+        Deletes a task in collection by it's ObjectId()
+    """
+    tasks_collection = request.app.state.db.data.tasks 
+    res = tasks_collection.delete_many({"_id": ObjectId(task_id)})
+
+    if res is None:
         raise HTTPException(400)
 
-    return res.inserted_id
-
-
-@router.post("/delete", response_model=Task)
-def del_task(request: Request, task: Task = None):
-    """
-        Deletes a task in collection
-    """
-
-    pass
+    if res.deleted_count == 0:
+        raise HTTPException(404)

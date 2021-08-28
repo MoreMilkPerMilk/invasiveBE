@@ -78,7 +78,7 @@ def add_location(request: Request, location: Location):
     """
     locations_collection = request.app.state.db.locations
 
-    res = locations_collection.insert_one(location)
+    res = locations_collection.insert_one(location.dict(by_alias=True))
 
     if res is None:
         raise HTTPException(404)

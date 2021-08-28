@@ -42,7 +42,7 @@ def create_user(request: Request, person: Person):
     users_collection = request.app.state.db.data.users
 
     #set unique keys so can't insert double ups
-    r = users_collection.insert_one(person.dict())
+    r = users_collection.insert_one(person.dict(by_alias=True))
 
     if r is None:
         raise HTTPException(status_code=404, detail="Could not add user.")

@@ -1,6 +1,6 @@
 from geojson import MultiPolygon
 from uuid import UUID
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List, Optional
 from Models.Location import Location
 from Models.WeedInstance import WeedInstance
@@ -11,6 +11,7 @@ class Council(BaseModel):
     Model for decribing a council including geo boundary, 
     weed instance locations within the council boundary
     """
+    id: str = Field(..., alias='_id')
     _id: str
     name: str
     # locations: List[Location] = [] #no longer
@@ -19,6 +20,7 @@ class Council(BaseModel):
     lga_code: int 
     abbreviated_name: str
     area_sqkm: float
+    council = True
 
     def add_occuring_species(self, species: Species):
         """Adds a species that occurs in this Council."""

@@ -1,12 +1,13 @@
 import uuid
 from uuid import UUID
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from geojson import Point
 from typing import List, Optional
 from Models.WeedInstance import WeedInstance
 
 
 class Location(BaseModel):
+    id: str = Field(..., alias='_id')
     _id: str
     name: str
     # lat: Optional[float] = None

@@ -1,4 +1,5 @@
 from typing import List
+from pydantic import Field
 
 from Models.Council import Council
 from Models.Task import Task
@@ -11,5 +12,8 @@ class Community(Council):
     """
 
     #aditional to Council
+    id: str = Field(..., alias='_id')
+    _id: str
     community_name: str
     community_tasks: List[Task]
+    council = False
