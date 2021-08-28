@@ -53,14 +53,11 @@ app.include_router(species.router)
 
 
 @app.post("/weeds/add")
-# async def add_weed()
 async def add_weed(weed_id: int, discovery_date: str, removed: bool, 
                         removal_date: Optional[str], replaced: bool, replaced_species: Optional[str], 
                         image_filename: Optional[str], file: UploadFile = File(...)):
     """Adds a weed instance"""
-    #for some reason can't use 
-
-# async def upload(user: User = Depends(), file: UploadFile = File(...)):
+    # -- async def upload(user: User = Depends(), file: UploadFile = File(...)):
 
     weed = WeedInstance({"weed_id": weed_id, "discovery_date": discovery_date, 
                 "removed": removed, "removal_date": removal_date, "replaced": replaced, 
@@ -81,31 +78,6 @@ async def create_file(
         "token": token,
         "fileb_content_type": fileb.content_type,
     }
-
-@app.post("/files/")
-async def create_file(
-    fileb: UploadFile = File(...), token: str = Form(...)
-):
-    return {
-        "file_size": len(file),
-        "token": token,
-        "fileb_content_type": fileb.content_type,
-    }
-
-# @app.post("/uploadfile/")
-# async def create_upload_file(file: UploadFile = File(...)):
-#     print("got" + file.filename)
-#     new_name = uuid.uuid4()
-#     try:
-#         with open(f"files/{new_name}", "wb") as new_file:
-#             new_file.write(file.file.read())
-#     except:
-#         return False
-    # return {"filename": file.filename}
-
-
-
-
 
 if __name__ == '__main__':
     uvicorn.run("app:app", host='0.0.0.0', port=8080, reload=True)

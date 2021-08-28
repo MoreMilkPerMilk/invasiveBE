@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Request, HTTPException
 from typing import List
 
+import logging
+
 from Models.Council import Council 
 from Models.Location import Location
 from Models.GeoJSONPoint import GeoJSONPoint
@@ -14,6 +16,8 @@ router = APIRouter(
     tags=["locations"],
     responses={404: {"description": "Not found"}}
 )
+
+log = logging.getLogger("backend-logger")
 
 LOCATIONS = 'locations'
 
@@ -44,20 +48,84 @@ def get_location_by_id(request: Request, location_id: int = None):
     
     return Location(**res)
 
+@router.get("/council/", response_model=List[Location])
+def get_all_in_council(request: Request, council: Council) -> List[Location]:
+    """Get all locations for a council using geojson query."""
+    location_collection = request.app.state.db.data.locations
+    location_collection = request.app.state.db.data.councils
+
+    if council is None:
+        log.error("get_all_inc_council() - Council is None")
+        raise HTTPException(404)
+
+    locations = location_collection.find({
+        "point": {
+            "$geoWithin": {
+                "$geometry": council.boundary
+            }
+        }
+    })
+
+    if locations is None:
+        log.error("get_all_inc_council() - Locations is None")
+        raise HTTPException(404)
+
+    return [Location(**loc).dict() for loc in locations]
+
 @router.post("/add")
 def add_location(request: Request, location: Location):
     """
     Adds/Updates a location. Supply address name or lat/long.
     If lat/long already exist, merge the two lists of weeds.
     """
-    return None
+    locations_collection = request.app.state.db.locations
 
-@router.post("/locations/delete")
-def delete_location(location: Location):
+    res = locations_collection.insert_one(location)
+
+    if res is None:
+        raise HTTPException(404)
+    
+    return True
+
+@router.post("/delete")
+def delete_location(request: Request, location: Location):
     """Delete a location"""
-    return None
+    locations_collection = request.app.state.db.locations
 
-@router.get("/locations/search")
-def location_search(point: GeoJSONPoint, max_distance: float):
+    res = locations_collection.insert_one(location)
+
+    if res is None:
+        raise HTTPException(404)
+    
+    return True
+
+@router.get("/near", response_model=List[Location])
+def location_near(request: Request, point: GeoJSONPoint, max_distance: float):
     """Get locations within max_distance of a point"""
-    return None
+    locations_collection = request.app.state.db.locations
+
+    if point is None:
+        log.error("get_all_in_radius() - point is none")
+        raise HTTPException(404)
+    
+    locations = locations_collection.find( {
+        "point": { "$near": point,  "$maxDistance": max_distance }
+    })
+
+    if locations is None:
+        log.error("get_all_with_max_distace() locations is None")
+        raise HTTPException(404)
+    
+    return [Location(**loc).dict() for loc in locations]
+
+@router.get("/search", response_model=List[Location])
+def location_search(request: Request, search_term: str):
+    """Search for locations by a given search_term"""
+    locations_collection = request.app.state.db.locations 
+
+    #make sure is indexed
+    locations_collection.create_index([("name", "text")])
+    
+    res = locations_collection.find({ "$text": { "$search": search_term } })
+    
+    return [] if res is None else [Location(**r) for r in res]
