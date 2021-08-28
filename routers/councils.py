@@ -17,18 +17,18 @@ router = APIRouter(
     responses={404: {"description": "Not found"}}
 )
 
-@router.get("/all", response_model=List[Council])
+@router.get("/peek", response_model=List[Council])
 def get_councils(request: Request) -> List[Council]:
     """
-        Returns all councils in the database (MAX 5)
+        Returns councils in the database (MAX 5)
         (VERRRY SLOW) -> don't use
     """
     council_collection = request.app.state.db.data.councils
 
-    res =  council_collection.find(limit=5) # five limit
+    res = council_collection.find(limit=5) # five limit
 
     if res is None:
-        raise HTTPException(status_code=404)
+        raise HTTPException(404)
 
     return [Council(**c) for c in res]
 

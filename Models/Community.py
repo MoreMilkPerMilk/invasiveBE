@@ -1,4 +1,7 @@
+from typing import List
+
 from Models.Council import Council
+from Models.Task import Task
 
 class Community(Council):
     """
