@@ -16,11 +16,10 @@ router = APIRouter(
     responses={404: {"description": "Not found"}}
 )
 
-
 @router.get("/", response_model=List[Person])
 def get_all_users(request: Request):
     """Get all users"""
-    users_collection = request.state.db['users']
+    users_collection = request.app.state.db.data.users
 
     return [Person(**x) for x in users_collection.find()]
 
@@ -31,7 +30,7 @@ def get_user_by_id(request: Request, user_id: int = None):
     if user_id is None:
         raise HTTPException(status_code=404, detail="No user_id")
     
-    users_collection = request.state.db['users']
+    users_collection = request.app.state.db.data.users
     person = users_collection.find_one({"person_id": user_id})
 
     return None if person is None else Person(**person)
@@ -40,7 +39,7 @@ def get_user_by_id(request: Request, user_id: int = None):
 @router.post("/add", response_model=Person)
 def create_user(request: Request, person: Person):
     """Create a user from Person Model !!!"""
-    users_collection = request.state.db['users']
+    users_collection = request.app.state.db.data.users
 
     #set unique keys so can't insert double ups
     r = users_collection.insert_one(person.dict())
@@ -52,20 +51,20 @@ def create_user(request: Request, person: Person):
 @router.post("/delete", response_model=Person)
 def delete_user(request: Request, person_id: int):
     """Delete a user"""
-    users_collection = request.state.db['users']
+    users_collection = request.app.state.db.data.users
     users_collection.delete_many({"person_id": person_id})
 
 
 @router.post("/add_identification", response_model=Person)
 def update_user(request: Request, person_id: int, weed_instance: WeedInstance):
     """Adds a WeedInstance to a user"""
-    users_collection = request.state.db['users']
+    users_collection = request.app.state.db.data.users
     
     key = {"person_id": person_id}
-    res = users_collection.find_one(k)
+    res = users_collection.find_one(key)
 
     if res is None:
-        raise HTTPException(status_code=404, detail="Could not find user")
+        raise HTTPException(404)
 
     person = Person(**res)
     person.add_identification(weed_instance)

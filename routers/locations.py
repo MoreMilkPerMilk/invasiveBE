@@ -19,15 +19,13 @@ router = APIRouter(
 
 log = logging.getLogger("backend-logger")
 
-LOCATIONS = 'locations'
-
 # @router.get("/locations", response_model=List[Location])
 @router.get("/", response_model=List[Location])
 def get_all_locations(request: Request):
     """
     Return all locations that exist within the collection
     """
-    locations_collection = request.state.db[LOCATIONS]
+    locations_collection = request.app.state.db.data.locations
     res = locations_collection.find()
 
     if res is None:
@@ -38,7 +36,7 @@ def get_all_locations(request: Request):
 @router.get("/{location_id}", response_model=Location)
 def get_location_by_id(request: Request, location_id: int = None):
     """Gets a location by id"""
-    locations_collection = request.state.db[LOCATIONS]
+    locations_collection = request.app.state.db.data.locations
     if location_id is None:
         raise HTTPException(status_code=404, detail="Didn't get valid location_id")
 
@@ -52,7 +50,7 @@ def get_location_by_id(request: Request, location_id: int = None):
 def get_all_in_council(request: Request, council: Council) -> List[Location]:
     """Get all locations for a council using geojson query."""
     location_collection = request.app.state.db.data.locations
-    location_collection = request.app.state.db.data.councils
+    councils_collection = request.app.state.db.data.councils
 
     if council is None:
         log.error("get_all_inc_council() - Council is None")

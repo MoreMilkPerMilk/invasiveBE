@@ -44,40 +44,12 @@ app.include_router(councils.router)
 app.include_router(locations.router)
 app.include_router(persons.router)
 app.include_router(species.router)
-# app.include_router(weeds.router)
+app.include_router(weeds.router)
 
 # SETUP UNIQUE KEYS
 # LocationService.set_unique_keys(locations_collection)
 # CouncilService.set_unique_keys(councils_collection)
 # WeedInstanceService.set_unique_keys(weeds_collection)
-
-
-@app.post("/weeds/add")
-async def add_weed(weed_id: int, discovery_date: str, removed: bool, 
-                        removal_date: Optional[str], replaced: bool, replaced_species: Optional[str], 
-                        image_filename: Optional[str], file: UploadFile = File(...)):
-    """Adds a weed instance"""
-    # -- async def upload(user: User = Depends(), file: UploadFile = File(...)):
-
-    weed = WeedInstance({"weed_id": weed_id, "discovery_date": discovery_date, 
-                "removed": removed, "removal_date": removal_date, "replaced": replaced, 
-                "replaced_species": replaced_species, "image_filename": image_filename})
-
-    return WeedInstanceService.add_weed(weeds_collection, weed, file)
-
-@app.post("/weeds/tstfile")
-async def create_file(
-    fileb: UploadFile = File(...), token: str = Form(...)
-):
-    # print(len(fileb.file_size))
-    # print(fileb)
-    print(token)
-    print(fileb.content_type)
-    return {
-        "file_size": len(fileb),
-        "token": token,
-        "fileb_content_type": fileb.content_type,
-    }
 
 if __name__ == '__main__':
     uvicorn.run("app:app", host='0.0.0.0', port=8080, reload=True)

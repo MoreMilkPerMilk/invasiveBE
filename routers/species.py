@@ -10,43 +10,50 @@ from db.session import database_instance
 router = APIRouter(
     prefix="/species",
     tags=["species"],
-    responses={404: {"description": "Not found"}}
+    responses={
+        404: {"description": "Not found"},
+        400: {"description": "Bad input"}
+    }
 )
-
-SPECIES = 'species'
 
 @router.get("/", response_model=List[Species])
 def get_species(request):
     """Get all species"""
-    species_collection = request.state.db.data[SPECIES]
+    species_collection = request.app.state.db.data.species
 
     res = species_collection.find()
 
     if res is None:
-        raise HTTPException(status_code=404)
+        raise HTTPException(404)
 
     return [Species(**s) for s in res]
 
-@router.get("/search")
-def get_species_by_id(request: Request, species_id: int = -1, species_name: str = ""):
-    """Get a species by species_id or species_name"""
-    species_collection = request.app.state.db.data[SPECIES]
+@router.get("/{species_id}", response_model=List[Species])
+def get_species_by_id(request: Request, species_id: int = None):
+    """Get a species by species_id"""
+    species_collection = request.app.state.db.data.species
 
     res = None
 
-    if species_id != -1:
-        res = species_collection.find_one({"species_id": species_id})
-    elif species_name != "":
-        res = species_collection.aggregate([
-            {
-                "$search": {
-                "text": {
-                    "path": "species_name",
-                    "query": species_name,
-                    "fuzzy": {}
-                }
-                }
-            }])
+    if species_id is None:
+        raise HTTPException(400)
+
+    res = species_collection.find_one({"species_id": species_id})
+
+    return None if res is None else Species(**res)
+
+@router.get("/search")
+def species_search(request: Request, species_name: str = ""):
+    """Search for a species by species_name"""
+    species_collection = request.app.state.db.data.species
+
+    res = None
+
+    if species_name == "" or species_name is None:
+        raise HTTPException(400)
+
+    species_collection.create_index([("species_name", "text")])
+    res = species_collection.find({ "$text": { "$search": species_name } })
 
     if res is None:
         raise HTTPException(status_code=404)
