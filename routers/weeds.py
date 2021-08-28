@@ -37,29 +37,27 @@ def get_all_locations(request: Request):
     return [WeedInstance(**i) for i in res] 
 
 @router.post("/add", response_model=List[WeedInstance])
-async def add_weed(request: Request, weed_id: int, discovery_date: str, removed: bool, 
+async def add_weed(request: Request, weed_id: int, species_id: str, discovery_date: str, removed: bool, 
                         removal_date: Optional[str], replaced: bool, replaced_species: Optional[str], 
-                        image_filename: Optional[str], file: UploadFile = File(...)):
+                        file: UploadFile = File(...)):
     """Adds a weed instance"""
     # -- async def upload(user: User = Depends(), file: UploadFile = File(...)):
 
     weeds_collection = request.app.state.db.data.weeds
 
-    weed = WeedInstance({"weed_id": weed_id, "discovery_date": discovery_date, 
+    weed = WeedInstance(**{"weed_id": weed_id, "discovery_date": discovery_date, 
                 "removed": removed, "removal_date": removal_date, "replaced": replaced, 
-                "replaced_species": replaced_species, "image_filename": image_filename})
+                "replaced_species": replaced_species, "image_filename": "", "species_id": species_id})
 
     new_filename = uuid.uuid4()
 
     try:
-        with open(f"file/{new_filename}", "wb") as new_file: 
+        with open(f"files/{new_filename}", "wb") as new_file: 
             new_file.write(file.file.read())
 
         weed.image_filename = new_filename
-        weeds_collection.insert_one(weed.dict(by_alias=True))
+        weeds_collection.insert_one(weed.dict())
 
     except Exception as e:
         log.error(f"Failed to add weed - {e}")
         raise HTTPException(404)
-
-    return True

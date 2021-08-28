@@ -54,7 +54,7 @@ def delete_user(request: Request, person_id: int):
     users_collection = request.app.state.db.data.users
     users_collection.delete_many({"person_id": person_id})
 
-@router.post("/add_identification", response_model=Person)
+@router.put("/add_identification", response_model=Person)
 def update_user(request: Request, person_id: int, weed_instance: WeedInstance):
     """Adds a WeedInstance to a user"""
     users_collection = request.app.state.db.data.users

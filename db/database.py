@@ -1,6 +1,5 @@
 import pymongo
 
-# from ..config.settings import settings
 from config.settings import settings
 
 class database():
@@ -11,9 +10,11 @@ class database():
         self.client = None 
 
     def connect(self):
+        """Connect to mongodb"""
         if self.client is None: 
             self.client = pymongo.MongoClient(self.URL.replace("<password>", self.PASSWORD))
             
     def get_client(self) -> pymongo.MongoClient:
-        self.connect()
+        """Get connected client"""
+        self.connect() # make sure we're connected
         return self.client

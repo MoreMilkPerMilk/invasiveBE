@@ -17,7 +17,7 @@ router = APIRouter(
 )
 
 @router.get("/", response_model=List[Species])
-def get_species(request):
+def get_species(request: Request):
     """Get all species"""
     species_collection = request.app.state.db.data.species
 
