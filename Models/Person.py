@@ -6,7 +6,7 @@ from Models.WeedInstance import WeedInstance
 from Models.Location import Location
 
 class Person(BaseModel):
-    person_id: int
+    person_id: int #TODO: change to field alias
     first_name: str
     last_name: str
     date_joined: str

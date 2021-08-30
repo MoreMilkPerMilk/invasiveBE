@@ -28,13 +28,13 @@ log = logging.getLogger("backend-logger")
 async def startup():
     app.state.db = database().get_client()
 
+app.include_router(communities.router)
 app.include_router(tasks.router)
 app.include_router(councils.router)
 app.include_router(locations.router)
 app.include_router(persons.router)
 app.include_router(species.router)
 app.include_router(weeds.router)
-app.include_router(communities.router)
 
 # SETUP UNIQUE KEYS
 # LocationService.set_unique_keys(locations_collection)

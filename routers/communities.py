@@ -239,17 +239,16 @@ def create_community(request: Request, name: str, boundary: dict, suburbs: List 
         # print(base)
         boundary_geojson = geojson.Feature(geometry=base, properties={})
                 
-    print(boundary_geojson)
+    # print(boundary_geojson)
 
-    communityJson = {"name": name, "boundary": boundary_geojson['geometry'], "members": [], "tasks": [], "councils": processed_councils, "suburbs": processed_suburbs}
+    communityJson = {"_id": str(ObjectId()), "name": name, "boundary": boundary_geojson['geometry'], "members": [], "tasks": [], "councils": processed_councils, "suburbs": processed_suburbs}
 
     community = Community(**communityJson)
-    community._id = ObjectId()
+    # community._id = ObjectId()
 
     communities_collection = request.app.state.db.data.communities
     
-    # res = communities_collection.insert_one(community.dict(by_alias=True))
-    res = None
+    res = communities_collection.insert_one(community.dict(by_alias=True))
 
     if res is None:
         raise HTTPException(404)
