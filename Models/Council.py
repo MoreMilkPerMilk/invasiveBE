@@ -20,7 +20,6 @@ class Council(BaseModel):
     lga_code: int 
     abbreviated_name: str
     area_sqkm: float
-    council = True
 
     def add_occuring_species(self, species: Species):
         """Adds a species that occurs in this Council."""

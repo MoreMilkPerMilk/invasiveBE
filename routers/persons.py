@@ -36,7 +36,7 @@ def get_user_by_id(request: Request, user_id: int = None):
     return None if person is None else Person(**person)
 
 
-@router.post("/add", response_model=Person)
+@router.post("/create", response_model=Person)
 def create_user(request: Request, person: Person):
     """Create a user from Person Model !!!"""
     users_collection = request.app.state.db.data.users
