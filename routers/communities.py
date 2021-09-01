@@ -12,9 +12,9 @@ from geojson import MultiPolygon
 from fuzzywuzzy import fuzz
 
 from Models.Community import Community 
-# from Models.Location import Location
-# from Models.Person import Person
-# from Models.Task import Task
+from Models.Location import Location
+from Models.Person import Person
+from Models.Task import Task
 # from 
 
 from Models.GeoJSONMultiPolygon import GeoJSONMultiPolygon

@@ -13,14 +13,14 @@ from db.database import database
 # from Models.Council import Council
 # from Models.GeoJSONPoint import GeoJSONPoint
 
-from routers import communities
-from routers import councils
-from routers import persons
-from routers import locations 
-from routers import species 
-from routers import persons 
-from routers import weeds 
-from routers import tasks
+from routers import communities, councils, persons, locations, species, weeds, tasks
+# from routers import councils
+# from routers import persons
+# from routers import locations 
+# from routers import species 
+# from routers import persons 
+# from routers import weeds 
+# from routers import tasks
 
 app = FastAPI()
 
