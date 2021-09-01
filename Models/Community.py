@@ -1,12 +1,9 @@
 from typing import List, Optional
 from pydantic import Field, BaseModel
 
-# from Models.Council import Council
-# from Models.Models.Task import Models.Task
-# from Models.Models.Person import Models.Person
-import Models.Task
-import Models.Person 
-import Models.Council
+from Models.Council import Council
+from Models.Task import Task
+from Models.Person import Person
 
 class Community(BaseModel):
     """
@@ -19,14 +16,14 @@ class Community(BaseModel):
     id: str = Field(..., alias='_id')
     _id: str
     name: str
-    tasks: Optional[List[Models.Task.Task]]= []
-    members: Optional[List[Models.Person.Person]] = []
+    tasks: Optional[List[Task]]= []
+    members: Optional[List[Person]] = []
     boundary: Optional[dict]
     suburbs: Optional[List[str]] = []
     councils: Optional[List[str]] = []
 
 
-    def add_user(self, user: Models.Person.Person):
+    def add_user(self, user: Person):
         """Add a user to the community"""
         if len(self.members) == 0:
             self.members = []
@@ -34,7 +31,7 @@ class Community(BaseModel):
         self.members.append(user)
 
     
-    def add_task(self, task: Models.Task.Task):
+    def add_task(self, task: Task):
         """Adds a task to this Community"""
         if len(self.tasks) == 0:
             self.tasks = []

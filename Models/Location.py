@@ -3,9 +3,8 @@ from uuid import UUID
 from pydantic import BaseModel, Field
 from geojson import Point
 from typing import List, Optional
-# from Models.WeedInstance import WeedInstance
-import Models
-import Models.WeedInstance
+from Models.WeedInstance import WeedInstance
+
 
 class Location(BaseModel):
     id: str = Field(..., alias='_id')
@@ -14,9 +13,9 @@ class Location(BaseModel):
     # lat: Optional[float] = None
     # long: Optional[float] = None
     point: Optional[dict] = None
-    weeds_present: Optional[List[Models.WeedInstance.WeedInstance]] = []
+    weeds_present: Optional[List[WeedInstance]] = []
 
-    def add_weed(self, weed_instance: Models.WeedInstance.WeedInstance):
+    def add_weed(self, weed_instance: WeedInstance):
         present = False
         for weed in self.weeds_present:
             if weed.uuid == weed_instance.uuid:

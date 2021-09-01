@@ -4,14 +4,12 @@ from fastapi import FastAPI, Response, status, File, UploadFile, Form, Depends
 
 from typing import *
 from db.database import database
-
-# 
-# from Models.Person import Person
-# from Models.WeedInstance import WeedInstance
-# from Models.Location import Location
-# from Models.Species import Species
-# from Models.Council import Council
-# from Models.GeoJSONPoint import GeoJSONPoint
+from Models.Person import Person
+from Models.WeedInstance import WeedInstance
+from Models.Location import Location
+from Models.Species import Species
+from Models.Council import Council
+from Models.GeoJSONPoint import GeoJSONPoint
 
 from routers import communities
 from routers import councils
