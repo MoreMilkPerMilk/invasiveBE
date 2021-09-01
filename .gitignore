@@ -11,3 +11,4 @@ Services/*
 openapi.json 
 swagger_to_uml.py 
 swagger.puml 
+start.sh

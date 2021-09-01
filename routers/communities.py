@@ -77,7 +77,7 @@ def get_community(request: Request, community_id: str):
     # return [Community(**r) for r in res]
 
 @router.get("/locations", response_model=List[Location])
-def get_community_locations(request: Request, community_id: int):
+def get_community_locations(request: Request, community_id: str):
     """Get locations that are within the Community boundary (RETURNS BOUNDARY - MAY SLOW BROWSER)"""
     community = get_community(request, community_id)
     loc = routers.locations.get_all_in_community(request, community)    
