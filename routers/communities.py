@@ -20,7 +20,9 @@ from Models.Task import Task
 from Models.GeoJSONMultiPolygon import GeoJSONMultiPolygon
 
 
-import routers.locations as locations
+# import routers.locations as locations
+# from routers.locations import locations
+import routers
 
 from db.session import database_instance
 
@@ -78,7 +80,7 @@ def get_community(request: Request, community_id: str):
 def get_community_locations(request: Request, community_id: int):
     """Get locations that are within the Community boundary (RETURNS BOUNDARY - MAY SLOW BROWSER)"""
     community = get_community(request, community_id)
-    loc = locations.get_all_in_community(request, community)    
+    loc = routers.locations.get_all_in_community(request, community)    
 
     if community is None or loc is None:
         raise HTTPException(status_code=404, detail="Item not found")
