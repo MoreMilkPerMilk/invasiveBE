@@ -82,8 +82,11 @@ def get_community_locations(request: Request, community_id: str):
     community = get_community(request, community_id)
     loc = routers.locations.get_all_in_community(request, community)    
 
-    if community is None or loc is None:
+    if community is None:
         raise HTTPException(status_code=404, detail="Item not found")
+
+    if loc is None: 
+        return []
 
     return [Location(**l) for l in loc]
 
