@@ -2,11 +2,8 @@ from typing import List, Optional
 from pydantic import Field, BaseModel
 
 from Models.Council import Council
-# from Models.Task import Task
 from Models.Person import Person
-# import Models.Task
-# import Models.Person 
-# import Models.Council
+
 
 class Community(BaseModel):
     """
@@ -19,7 +16,7 @@ class Community(BaseModel):
     id: str = Field(..., alias='_id')
     _id: str
     name: str
-    tasks: Optional['List[Task]']= []
+    tasks: Optional['List[Task]']= [] # needs '' for update_forward_refs() to fix circular dependency
     members: Optional[List[Person]] = []
     boundary: Optional[dict]
     suburbs: Optional[List[str]] = []
@@ -34,7 +31,7 @@ class Community(BaseModel):
         self.members.append(user)
 
     
-    def add_task(self, task: 'Task'):
+    def add_task(self, task: 'Task'): # LEAVE 'Task' as update_forward_refs()
         """Adds a task to this Community"""
         if len(self.tasks) == 0:
             self.tasks = []

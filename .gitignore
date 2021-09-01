@@ -8,3 +8,6 @@ test.py
 files/*
 !files/.gitkeep 
 Services/*
+openapi.json 
+swagger_to_uml.py 
+swagger.puml 

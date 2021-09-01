@@ -4,8 +4,6 @@ from pydantic import BaseModel, Field
 from geojson import Point
 from typing import List, Optional
 from Models.WeedInstance import WeedInstance
-# import Models
-# import Models.WeedInstance
 
 class Location(BaseModel):
     id: str = Field(..., alias='_id')

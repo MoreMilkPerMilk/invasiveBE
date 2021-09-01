@@ -1,9 +1,6 @@
-import uuid
-
 from pydantic import BaseModel
 from datetime import date
 from typing import Optional
-
 
 class WeedInstance(BaseModel):
     _id: str  # id for this specific instance

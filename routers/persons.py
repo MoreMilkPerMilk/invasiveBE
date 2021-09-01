@@ -48,7 +48,7 @@ def create_user(request: Request, person: Person):
         raise HTTPException(status_code=404, detail="Could not add user.")
 
 
-@router.post("/delete", response_model=Person)
+@router.delete("/delete", response_model=Person)
 def delete_user(request: Request, person_id: int):
     """Delete a user"""
     users_collection = request.app.state.db.data.users

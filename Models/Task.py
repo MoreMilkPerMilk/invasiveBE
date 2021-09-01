@@ -6,10 +6,6 @@ from Models.Community import Community
 from Models.Council import Council
 from Models.GeoJSONMultiPolygon import GeoJSONMultiPolygon
 
-# import Models
-# import Models.Council
-# import Models.Community
-# import Models.Person
 
 class Task(BaseModel):
     """

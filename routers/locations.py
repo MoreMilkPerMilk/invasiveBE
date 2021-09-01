@@ -85,7 +85,7 @@ def add_location(request: Request, location: Location):
     
     return True
 
-@router.post("/delete")
+@router.delete("/delete")
 def delete_location(request: Request, location: Location):
     """Delete a location"""
     locations_collection = request.app.state.db.locations

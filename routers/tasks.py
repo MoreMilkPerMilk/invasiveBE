@@ -60,10 +60,9 @@ def add_task(request: Request, task: Task = None):
         raise HTTPException(404)
 
     # return {"inserted_id": res.inserted_id}
+    return task
 
-
-
-@router.post("/delete")
+@router.delete("/delete")
 def delete_task(request: Request, task_id: str = None):
     """
         Deletes a task in collection by it's ObjectId()

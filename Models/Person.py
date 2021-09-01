@@ -4,9 +4,6 @@ from pydantic import BaseModel
 from typing import Optional, List
 from Models.WeedInstance import WeedInstance
 from Models.Location import Location
-# import Models.WeedInstance
-# import Models.Location
-
 
 class Person(BaseModel):
     person_id: int #TODO: change to field alias

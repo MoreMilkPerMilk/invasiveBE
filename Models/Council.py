@@ -6,9 +6,6 @@ from typing import List, Optional
 from Models.Location import Location
 from Models.WeedInstance import WeedInstance
 from Models.Species import Species
-# import Models.Species 
-# import Models.Location
-# import Models.WeedInstance
 
 class Council(BaseModel):
     """

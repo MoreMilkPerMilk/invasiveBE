@@ -29,7 +29,8 @@ log = logging.getLogger("backend-logger")
 router = APIRouter(
     prefix="/communities",
     tags=["communities"],
-    responses={404: {"description": "Not found"}}
+    responses={
+        404: {"description": "Not found"}}
 )
 
 @router.get("/peek", response_model=List[Community])
@@ -60,7 +61,7 @@ def peek_communities(request: Request) -> List[Community]:
 
     return [Community(**c) for c in res]
 
-@router.get("/{community_id}", response_model=List[Community])
+@router.get("/{community_id}", response_model=Community)
 def get_community(request: Request, community_id: str):
     """Gets a community by a given id"""
     community_collection = request.app.state.db.data.communities
@@ -118,7 +119,7 @@ def get_community_by_location(request: Request, location: Location):
 #############################################
 # non council-similar stuff
 
-@router.put("/users/add")
+@router.put("/users/add", response_model=Community)
 def add_user_to_community(request: Request, community_id: str, user: Person):
     """Adds a user to a given community"""
     community_collection = request.app.state.db.data.communities
@@ -128,9 +129,11 @@ def add_user_to_community(request: Request, community_id: str, user: Person):
     if community is None: 
         raise HTTPException(404)
 
-    community_collection.replace_one({})
+    community_collection.replace_one({"_id": community_id}, community, upsert=True)
 
-@router.put("/tasks/add")
+    return community
+
+@router.put("/tasks/add", response_model=Community)
 def add_task_to_community(request: Request, community_id: str, task: Task):
     """Adds a task to a given community"""
     community_collection = request.app.state.db.data.communities
@@ -144,6 +147,8 @@ def add_task_to_community(request: Request, community_id: str, task: Task):
 
     if community_collection.replace_one({"_id": community_id}, community.dict(), upsert=True) is None:
         raise HTTPException(404)
+
+    return community
 
 def find_suburb(suburb_name: str) -> dict: 
     """Finds a suburb from suburbs.json"""
