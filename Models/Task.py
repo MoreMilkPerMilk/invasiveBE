@@ -1,9 +1,15 @@
 from pydantic import BaseModel, Field
 from typing import List, Optional
 
-from Models.Person import Person
-from Models.GeoJSONMultiPolygon import GeoJSONMultiPolygon
+# from Models.Person import Person
+# from Models.Community import Community
+# from Models.Council import Council
+# from Models.GeoJSONMultiPolygon import GeoJSONMultiPolygon
 
+# import Models
+import Models.Council
+import Models.Community
+import Models.Person
 
 class Task(BaseModel):
     """
@@ -12,8 +18,8 @@ class Task(BaseModel):
     """
     id: str = Field(..., alias='_id')
     _id: str
-    task_name: str 
-    person: Person
-    task_description: str 
-    task_polygon: Optional[GeoJSONMultiPolygon]
-    task_polygon_includes: Optional[List[str]]
+    name: str 
+    person: Models.Person.Person
+    description: str 
+    community: Optional[Models.Community.Community]
+    council: Optional[Models.Council.Council]
