@@ -7,7 +7,6 @@
 - [Species](#species)
 - [User](#user)
 - [Community](#community)
-- [Task](#task)
 
 ## Council <a name = "council"></a>
 
@@ -57,18 +56,10 @@
 
 ## Community FEATURES NOT MODEL (TODO!) <a name="community"></a>
 
-- name
-- suburbs
-- councils
-- members
-- boundary
-- tasks 
-- other - reporting etc. ?
-
-## Task <a name="task"></a>
-
-- name
-- person
-- description
-- council 
-- community
+- community name
+- suburb / council?
+- other - reporting etc.
+- encapsulate the addition of multiple areas to a single community
+- maybe encapsulate that Councils are actually Communities, 
+and have communities as the main target which has a variable 
+which names whether something is a Council etc? 
