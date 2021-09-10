@@ -7,6 +7,7 @@
 - [Species](#species)
 - [User](#user)
 - [Community](#community)
+- [Report] (#report)
 
 ## Council <a name = "council"></a>
 
@@ -63,3 +64,11 @@
 - maybe encapsulate that Councils are actually Communities, 
 and have communities as the main target which has a variable 
 which names whether something is a Council etc? 
+
+## Report <a name="report"></a>
+- idea: collate user data into a report for council to make reporting process more efficient and eliminiate redundant data
+- area name - if available some colloquial name e.g. "Sutton's Creek" 
+- Locations 
+- images?
+- report status (stage with Council etc.) {pending council, feedback, investigating, DONE} 
+ 

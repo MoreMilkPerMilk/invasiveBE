@@ -76,7 +76,7 @@ def add_location(request: Request, location: Location):
     Adds/Updates a location. Supply address name or lat/long.
     If lat/long already exist, merge the two lists of weeds.
     """
-    locations_collection = request.app.state.db.locations
+    locations_collection = request.app.state.db.data.locations
 
     res = locations_collection.insert_one(location.dict(by_alias=True))
 
@@ -88,7 +88,7 @@ def add_location(request: Request, location: Location):
 @router.delete("/delete")
 def delete_location(request: Request, location: Location):
     """Delete a location"""
-    locations_collection = request.app.state.db.locations
+    locations_collection = request.app.state.db.data.locations
 
     res = locations_collection.insert_one(location)
 
@@ -100,7 +100,7 @@ def delete_location(request: Request, location: Location):
 @router.get("/near", response_model=List[Location])
 def location_near(request: Request, point: GeoJSONPoint, max_distance: float):
     """Get locations within max_distance of a point"""
-    locations_collection = request.app.state.db.locations
+    locations_collection = request.app.state.db.data.locations
 
     if point is None:
         log.error("get_all_in_radius() - point is none")
@@ -119,7 +119,7 @@ def location_near(request: Request, point: GeoJSONPoint, max_distance: float):
 @router.get("/search", response_model=List[Location])
 def location_search(request: Request, search_term: str):
     """Search for locations by a given search_term"""
-    locations_collection = request.app.state.db.locations 
+    locations_collection = request.app.state.db.data.locations 
 
     #make sure is indexed
     locations_collection.create_index([("name", "text")])

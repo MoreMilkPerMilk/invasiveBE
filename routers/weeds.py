@@ -23,7 +23,7 @@ log = logging.getLogger("backend-logger")
 
 
 # @router.get("/locations", response_model=List[Location])
-@router.get("/", response_model=List[Location])
+@router.get("/", response_model=List[WeedInstance])
 def get_all_locations(request: Request):
     """
     Return all locations that exist within the collection
