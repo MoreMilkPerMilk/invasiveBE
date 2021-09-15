@@ -1,7 +1,14 @@
-from pusher_push_notifications import PushNotifications
-from config.settings import settings
 
-beams_client = PushNotifications(
-    instance_id=settings.pusher_instance_id,
-    secret_key=settings.pusher_key
+from config.settings import settings
+import pusher
+
+pusher_client = pusher.Pusher(
+  app_id=settings.pusher['app_id'],
+  key=settings.pusher['key'],
+  secret=settings.pusher['secret'],
+  cluster=settings.pusher['cluster'],
+  ssl=True
 )
+
+pusher_client.trigger('my-channel', 'my-event', {'message': 'hello world'})
+
