@@ -1,0 +1,27 @@
+<head>
+    <script>
+        // importScripts("https://js.pusher.com/beams/service-worker.js");
+    </script>
+
+<script src="https://js.pusher.com/7.0.3/pusher.min.js"></script>
+
+
+    <!-- <script src="https://js.pusher.com/beams/1.0/push-notifications-cdn.js"></script> -->
+
+    <script>
+        var pusher = new Pusher("APP_KEY", {
+                cluster: "APP_CLUSTER",
+        });
+
+        var channel = pusher.subscribe("my-channel");
+
+        channel.bind("my-event", (data) => {
+        // Method to be dispatched on trigger.
+        console.log(data);
+        });
+    </script>
+</head>
+
+<body>
+
+</body>

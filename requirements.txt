@@ -6,3 +6,4 @@ fuzzywuzzy
 python-Levenshtein
 requests
 geojson
+pusher_push_notifications

@@ -46,7 +46,7 @@ def get_location_by_id(request: Request, location_id: int = None):
     
     return Location(**res)
 
-@router.get("/council/", response_model=List[Location])
+@router.post("/council/", response_model=List[Location])
 def get_all_in_council(request: Request, council: Council) -> List[Location]:
     """Get all locations for a council using geojson query."""
     location_collection = request.app.state.db.data.locations
