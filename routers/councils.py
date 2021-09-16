@@ -6,7 +6,7 @@ from fastapi import APIRouter, Request, HTTPException
 from typing import List
 from bson.objectid import ObjectId
 from geojson import MultiPolygon
-from pymongo import Collection
+from pymongo.collection import Collection
 
 from Models.Council import Council 
 from Models.Location import Location

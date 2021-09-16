@@ -2,7 +2,7 @@ import pymongo
 
 from fastapi import APIRouter, Request, HTTPException
 from typing import List
-from pymongo import Collection
+from pymongo.collection import Collection
 
 from Models.Council import Council 
 from Models.Location import Location

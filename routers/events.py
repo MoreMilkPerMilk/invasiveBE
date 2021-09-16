@@ -4,7 +4,7 @@ import pymongo
 from fastapi import APIRouter, Request, HTTPException
 from typing import List
 from bson.objectid import ObjectId
-from pymongo import Collection
+from pymongo.collection import Collection
 
 from Models.Event import Event
 

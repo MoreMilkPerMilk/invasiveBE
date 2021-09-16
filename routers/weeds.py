@@ -5,7 +5,7 @@ import pymongo
 from Models.WeedInstance import WeedInstance
 from fastapi import APIRouter, Request, HTTPException, File, UploadFile
 from typing import List, Optional
-from pymongo import Collection
+from pymongo.collection import Collection
 
 from Models.Council import Council 
 from Models.Location import Location

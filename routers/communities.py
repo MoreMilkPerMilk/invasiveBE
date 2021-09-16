@@ -9,7 +9,8 @@ from fastapi import APIRouter, Request, HTTPException
 from typing import List
 from bson.objectid import ObjectId
 from geojson import MultiPolygon
-from pymomngo import Collection
+from pymongo.collection import Collection
+
 
 from Models.Community import Community 
 from Models.Location import Location

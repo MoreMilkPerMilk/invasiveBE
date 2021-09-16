@@ -1,10 +1,15 @@
+from Models.GeoJSONMultiPolygon import GeoJSONMultiPolygon
 import logging
 import uuid
 import pymongo
+import geojson
+import shapely
 
 from fastapi import APIRouter, Request, HTTPException, File, UploadFile
 from typing import List, Optional
-from pymongo import Collection
+from pymongo.collection import Collection
+from shapely.geometry import Point
+from math import sqrt
 
 from Models.WeedInstance import WeedInstance
 from Models.Council import Council 
@@ -13,6 +18,8 @@ from Models.GeoJSONPoint import GeoJSONPoint
 from Models.Report import Report
 
 from db.session import database_instance
+
+PADDING = 0.1 # 10% padding on report boundary
 
 router = APIRouter(
     prefix="/reports",
@@ -24,12 +31,24 @@ log = logging.getLogger("backend-logger")
 
 def set_unique_keys(reports_collection: Collection):
     """
-        Sets reports_collection to be uniquely identified by 'point' ASC
+        Sets reports_collection to be uniquely identified by 'name' ASC
     """
     reports_collection.create_index(
         [("name", pymongo.ASCENDING)],
         unique=True
     )
+
+def to_square(polygon):
+    minx, miny, maxx, maxy = polygon.bounds
+    
+    # get the centroid
+    centroid = [(maxx+minx)/2, (maxy+miny)/2]
+    # get the diagonal
+    diagonal = sqrt((maxx-minx)**2+(maxy-miny)**2)
+    
+    return Point(centroid).buffer(diagonal/2, cap_style=3)
+
+    
 
 @router.get("/", response_mode=List[Report])
 def get_all_reports(request: Request):
@@ -60,9 +79,15 @@ def add_a_report(request: Request, report: Report):
     if report.polygon is not None:
         log.print("hmm chosen to supply polygon")
     else:
-        # minimum bounding
-        min = (float('inf'), float('inf'))
-        max = (float('-inf'), float('-inf'))
+        polygon = geojson.Polygon([(loc.point.coordinates[0], loc.point.coordinates[1]) for loc in report.locations])
+        print(f"polygon = {polygon}")
 
-        for location in report.locations:
-            if point.
+        polygon = shapely.geometry.asShape(polygon)
+        polygon['geometry'] = polygon['geometry'].map(to_square)
+
+        print(polygon['geometry'])
+
+        
+
+
+
