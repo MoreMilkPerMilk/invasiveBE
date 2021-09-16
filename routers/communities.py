@@ -9,19 +9,15 @@ from fastapi import APIRouter, Request, HTTPException
 from typing import List
 from bson.objectid import ObjectId
 from geojson import MultiPolygon
-from fuzzywuzzy import fuzz
+from pymomngo import Collection
 
 from Models.Community import Community 
 from Models.Location import Location
 from Models.Person import Person
-from Models.Task import Task
-# from 
+from Models.Event import Event
 
 from Models.GeoJSONMultiPolygon import GeoJSONMultiPolygon
 
-
-# import routers.locations as locations
-# from routers.locations import locations
 import routers
 
 from db.session import database_instance
@@ -34,6 +30,15 @@ router = APIRouter(
     responses={
         404: {"description": "Not found"}}
 )
+
+def set_unique_keys(community_collection: Collection):
+    """
+        Sets community_collection to be uniquely identified by 'name' ASC
+    """
+    community_collection.create_index(
+        [("name", pymongo.ASCENDING)],
+        unique=True
+    )
 
 @router.get("/peek", response_model=List[Community])
 def peek_communities(request: Request) -> List[Community]:
@@ -53,7 +58,7 @@ def peek_communities(request: Request) -> List[Community]:
                 "species_occuring": 1,
                 "abbreviated_name": 1,
                 "area_sqkm": 1,
-                "community_tasks": 1
+                "community_events": 1
             }
         }
     ])
@@ -138,16 +143,16 @@ def add_user_to_community(request: Request, community_id: str, user: Person):
 
     return community
 
-@router.put("/tasks/add", response_model=Community)
-def add_task_to_community(request: Request, community_id: str, task: Task):
-    """Adds a task to a given community"""
+@router.put("/events/add", response_model=Community)
+def add_event_to_community(request: Request, community_id: str, event: Event):
+    """Adds a event to a given community"""
     community_collection = request.app.state.db.data.communities
     
     community = get_community(request, community_id)
 
-    community.add_task(task)
+    community.add_event(event)
 
-    if community is None or task is None: 
+    if community is None or event is None: 
         raise HTTPException(404)
 
     if community_collection.replace_one({"_id": community_id}, community.dict(), upsert=True) is None:
@@ -253,7 +258,7 @@ def create_community(request: Request, name: str, boundary: dict, suburbs: List 
                 
     # print(boundary_geojson)
 
-    communityJson = {"_id": str(ObjectId()), "name": name, "boundary": boundary_geojson['geometry'], "members": [], "tasks": [], "councils": processed_councils, "suburbs": processed_suburbs}
+    communityJson = {"_id": str(ObjectId()), "name": name, "boundary": boundary_geojson['geometry'], "members": [], "events": [], "councils": processed_councils, "suburbs": processed_suburbs}
 
     community = Community(**communityJson)
     # community._id = ObjectId()

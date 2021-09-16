@@ -1,3 +1,4 @@
+from Models.GeoJSONPoint import GeoJSONPoint
 import uuid
 from uuid import UUID
 from pydantic import BaseModel, Field
@@ -11,7 +12,7 @@ class Location(BaseModel):
     name: str
     # lat: Optional[float] = None
     # long: Optional[float] = None
-    point: Optional[dict] = None
+    point: Optional[GeoJSONPoint] = None
     weeds_present: Optional[List[WeedInstance]] = []
 
     def add_weed(self, weed_instance: WeedInstance):

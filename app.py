@@ -39,9 +39,11 @@ app.include_router(species.router)
 app.include_router(weeds.router)
 
 # SETUP UNIQUE KEYS
-# LocationService.set_unique_keys(locations_collection)
-# CouncilService.set_unique_keys(councils_collection)
-# WeedInstanceService.set_unique_keys(weeds_collection)
+
+councils.router.set_unique_keys(app.state.db.data.councils)
+locations.router.set_unique_keys(app.state.db.data.locations)
+weeds.router.set_unique_keys(app.state.db.data.weeds)
+
 
 if __name__ == '__main__':
     uvicorn.run("app:app", host='0.0.0.0', port=8080, reload=True)

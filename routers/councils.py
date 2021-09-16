@@ -6,6 +6,7 @@ from fastapi import APIRouter, Request, HTTPException
 from typing import List
 from bson.objectid import ObjectId
 from geojson import MultiPolygon
+from pymongo import Collection
 
 from Models.Council import Council 
 from Models.Location import Location
@@ -21,6 +22,13 @@ router = APIRouter(
     tags=["councils"],
     responses={404: {"description": "Not found"}}
 )
+
+def set_unique_keys(council_collection: Collection):
+    """Sets council_collection to be uniquely identified by 'name' ASC"""
+    council_collection.create_index(
+        [("name", pymongo.ASCENDING)],
+        unique=True
+    )
 
 @router.get("/peek", response_model=List[Council])
 def peek_councils(request: Request) -> List[Council]:

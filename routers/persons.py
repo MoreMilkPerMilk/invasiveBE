@@ -1,5 +1,8 @@
+import pymongo
+
 from fastapi import APIRouter, Request, HTTPException
 from typing import List
+from pymongo import Collection
 
 from Models.Council import Council 
 from Models.Location import Location
@@ -15,6 +18,19 @@ router = APIRouter(
     tags=["users"],
     responses={404: {"description": "Not found"}}
 )
+
+def set_unique_keys(location_collection: Collection):
+    """
+        Sets persons_collection to be uniquely identified by compound 'first_name', 'last_name', 'person_id' ASC
+    """
+    location_collection.create_index([
+        ("person_id", pymongo.ASCENDING),
+        ("first_name", pymongo.ASCENDING),
+        ("last_name", pymongo.ASCENDING)
+    ],
+        unique=True
+    )
+    
 
 @router.get("/", response_model=List[Person])
 def get_all_users(request: Request):

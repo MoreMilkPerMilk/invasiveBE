@@ -1,9 +1,11 @@
 import logging
 import uuid
+import pymongo
 
 from Models.WeedInstance import WeedInstance
 from fastapi import APIRouter, Request, HTTPException, File, UploadFile
 from typing import List, Optional
+from pymongo import Collection
 
 from Models.Council import Council 
 from Models.Location import Location
@@ -21,6 +23,12 @@ router = APIRouter(
 
 log = logging.getLogger("backend-logger")
 
+def set_unique_keys(weed_collection: Collection):
+    """Sets weed_collection to be uniquely identified by 'species_id' ASC"""
+    weed_collection.create_index(
+        [("species_id", pymongo.ASCENDING)],
+        unique=True
+    )
 
 # @router.get("/locations", response_model=List[Location])
 @router.get("/", response_model=List[WeedInstance])

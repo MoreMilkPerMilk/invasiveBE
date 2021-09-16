@@ -1,11 +1,11 @@
-# staff, person,
-# first last, day joined, number of species identified, species tagged,
 from pydantic import BaseModel, Field
 from typing import Optional, List
+from enum import Enum, IntEnum
+
+from Models.GeoJSONMultiPolygon import GeoJSONMultiPolygon
 from Models.WeedInstance import WeedInstance
 from Models.Location import Location
 
-from enum import Enum, IntEnum
 
 
 class Status(str, Enum):
@@ -23,8 +23,10 @@ class Report(BaseModel):
     _id: str
     name: str #unsure 
     status: Status 
-    weeds: List[WeedInstance] 
+    locations: List[Location]
     notes: str 
+    polygon: Optional[GeoJSONMultiPolygon] = None
+    images: Optional[List[str]] = None
     
 
     #idk images back from WeedInstances?

@@ -11,12 +11,10 @@ class Community(BaseModel):
     have vague perimeters, or capture users which are not 
     within a specific area (online communities?)
     """
-
-    #aditional to Council
     id: str = Field(..., alias='_id')
     _id: str
     name: str
-    tasks: Optional['List[Task]']= [] # needs '' for update_forward_refs() to fix circular dependency
+    events: Optional['List[Event]']= [] # needs '' for update_forward_refs() to fix circular dependency
     members: Optional[List[Person]] = []
     boundary: Optional[dict]
     suburbs: Optional[List[str]] = []
@@ -31,12 +29,12 @@ class Community(BaseModel):
         self.members.append(user)
 
     
-    def add_task(self, task: 'Task'): # LEAVE 'Task' as update_forward_refs()
-        """Adds a task to this Community"""
-        if len(self.tasks) == 0:
-            self.tasks = []
+    def add_event(self, event: 'Event'): # LEAVE 'Event' as update_forward_refs()
+        """Adds a event to this Community"""
+        if len(self.events) == 0:
+            self.events = []
 
-        self.tasks.append(task)
+        self.events.append(event)
 
-from Models.Task import Task
+from Models.Event import Event
 Community.update_forward_refs()
