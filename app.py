@@ -16,7 +16,7 @@ log = logging.getLogger("backend-logger")
 @app.on_event("startup")
 async def startup():
     app.state.db = database().get_client()
-    app.state.pusher_session = pusher.session().get_client()
+    app.state.pusher_client = pusher.session().get_client()
     # SETUP UNIQUE KEYS
     councils.set_unique_keys(app.state.db.data.councils)
     photolocations.set_unique_keys(app.state.db.data.locations)

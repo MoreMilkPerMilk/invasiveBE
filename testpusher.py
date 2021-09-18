@@ -11,4 +11,3 @@ pusher_client = pusher.Pusher(
 )
 
 pusher_client.trigger('my-channel', 'my-event', {'message': 'hello world'})
-

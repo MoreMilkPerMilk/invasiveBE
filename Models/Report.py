@@ -29,7 +29,7 @@ class Report(BaseModel):
     locations: List[PhotoLocation]
     notes: str 
     polygon: Optional[GeoJSONMultiPolygon] = None
-    pusher_channel: Optional[str]
+    # pusher_event: Optional[str]
 
     #idk images back from WeedInstances?
 

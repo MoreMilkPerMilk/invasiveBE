@@ -110,7 +110,7 @@ def add_location_to_report(request: Request, report_id: str, location: PhotoLoca
     reports_collection.replace_one(key, report.dict(), upsert=True)
 
 @router.put("/sendpushnotification")
-def send_push_notification(request: Request, report_id: str):
+def send_push_notification(request: Request, report_id: str, message: str):
     """
         Sends a push notification to all users related to a report
     """
@@ -121,4 +121,7 @@ def send_push_notification(request: Request, report_id: str):
     if res is None:
         raise HTTPException(404)
 
-    
+    report = Report(**res)
+
+    pusher_client = request.app.state.pusher_client
+    pusher_client.trigger("council-report-updates", report.name, {'message': message})
