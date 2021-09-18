@@ -2,7 +2,7 @@ from typing import List, Optional
 from pydantic import Field, BaseModel
 
 from Models.Council import Council
-from Models.Person import Person
+from Models.User import User
 
 
 class Community(BaseModel):
@@ -15,13 +15,13 @@ class Community(BaseModel):
     _id: str
     name: str
     events: Optional['List[Event]']= [] # needs '' for update_forward_refs() to fix circular dependency
-    members: Optional[List[Person]] = []
+    members: Optional[List[User]] = []
     boundary: Optional[dict]
     suburbs: Optional[List[str]] = []
     councils: Optional[List[str]] = []
 
 
-    def add_user(self, user: Person):
+    def add_user(self, user: User):
         """Add a user to the community"""
         if len(self.members) == 0:
             self.members = []

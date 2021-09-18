@@ -1,17 +1,15 @@
+from Models.Species import Species
+from Models.PhotoLocation import PhotoLocation
 from pydantic import BaseModel, Field
 from typing import Optional, List
 from enum import Enum, IntEnum
 
 from Models.GeoJSONMultiPolygon import GeoJSONMultiPolygon
-from Models.WeedInstance import WeedInstance
-from Models.Location import Location
-
-
+from Models.PhotoLocation import PhotoLocation
 
 class Status(str, Enum):
     closed = 'closed'
     open = 'open'
-
 
 class Report(BaseModel):
     """
@@ -21,12 +19,21 @@ class Report(BaseModel):
     """
     id: str = Field(..., alias='_id')
     _id: str
+
     name: str #unsure 
+    species_id: str
     status: Status 
-    locations: List[Location]
+    locations: List[PhotoLocation]
     notes: str 
     polygon: Optional[GeoJSONMultiPolygon] = None
-    images: Optional[List[str]] = None
-    
 
     #idk images back from WeedInstances?
+
+    def add_location(self, location: PhotoLocation):
+        """
+            Adds location to this Report's locations
+        """
+        if self.locations is None:
+            self.locations = []
+
+        self.locations.append(location)

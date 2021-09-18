@@ -8,7 +8,7 @@ from pymongo.collection import Collection
 
 from Models.Event import Event
 
-import routers.locations as locations
+import routers.photolocations as photolocations
 
 from db.session import database_instance
 

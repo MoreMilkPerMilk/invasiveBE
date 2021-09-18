@@ -11,9 +11,8 @@ from pymongo.collection import Collection
 from shapely.geometry import Point
 from math import sqrt
 
-from Models.WeedInstance import WeedInstance
 from Models.Council import Council 
-from Models.Location import Location
+from Models.PhotoLocation import PhotoLocation
 from Models.GeoJSONPoint import GeoJSONPoint
 from Models.Report import Report
 
@@ -39,6 +38,10 @@ def set_unique_keys(reports_collection: Collection):
     )
 
 def to_square(polygon):
+    """
+        For shapely boundaries
+        https://gis.stackexchange.com/questions/374864/creating-a-square-buffer-around-a-shapely-polygon
+    """
     minx, miny, maxx, maxy = polygon.bounds
     
     # get the centroid
@@ -48,9 +51,7 @@ def to_square(polygon):
     
     return Point(centroid).buffer(diagonal/2, cap_style=3)
 
-    
-
-@router.get("/", response_mode=List[Report])
+@router.get("/", response_model=List[Report])
 def get_all_reports(request: Request):
     """
     GET all the reports in the collection
@@ -63,12 +64,14 @@ def get_all_reports(request: Request):
 
     return [Report(**i) for i in res]
 
-@router.put("/{report_id}", response_model=Report)
+@router.put("/update", response_model=Report)
 def update_a_report(request: Request, report_id: str, report: Report):
     """
     Update a given report
     """
-    reports_collection = request.app.state.db.data.reports 
+    reports_collection = request.app.state.db.data.reports
+
+    reports_collection 
 
 @router.post("/add", response_model=Report)
 def add_a_report(request: Request, report: Report):
@@ -82,12 +85,26 @@ def add_a_report(request: Request, report: Report):
         polygon = geojson.Polygon([(loc.point.coordinates[0], loc.point.coordinates[1]) for loc in report.locations])
         print(f"polygon = {polygon}")
 
-        polygon = shapely.geometry.asShape(polygon)
-        polygon['geometry'] = polygon['geometry'].map(to_square)
+        polygon = shapely.geometry.Polygon([(loc.point.coordinates[0], loc.point.coordinates[1]) for loc in report.locations])
+        # polygon['geometry'] = polygon['geometry'].map(to_square)
+        polygon = polygon.map(to_square)
 
         print(polygon['geometry'])
-
         
+@router.put("/addphotolocation", response_model=Report)
+def add_location_to_report(request: Request, report_id: str, location: PhotoLocation):
+    """
+        Adds a Photo-Location pair to a Report
+    """
+    reports_collection = request.app.state.db.data.reports
+    
+    key = {"_id", report_id}
+    res = reports_collection.find_one(key)
 
+    if res is None:
+        raise HTTPException(404)
 
+    report = Report(**res)
+    report.add_location(location)
 
+    reports_collection.replace_one(key, report.dict(), upsert=True)

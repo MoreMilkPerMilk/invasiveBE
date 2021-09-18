@@ -9,9 +9,9 @@ from geojson import MultiPolygon
 from pymongo.collection import Collection
 
 from Models.Council import Council 
-from Models.Location import Location
+from Models.PhotoLocation import PhotoLocation
 
-import routers.locations as locations
+import routers.photolocations as photolocations
 
 from db.session import database_instance
 
@@ -70,16 +70,16 @@ def get_council(request: Request, council_id: str):
 
     return [Council(**r) for r in res]
 
-@router.get("/locations", response_model=List[Location])
-def get_council_locations(request: Request, council_id: int):
-    """Get locations that are within the Council boundary (RETURNS BOUNDARY - MAY SLOW BROWSER)"""
+@router.get("/photolocations", response_model=List[PhotoLocation])
+def get_council_photolocations(request: Request, council_id: int):
+    """Get photolocations that are within the Council boundary (RETURNS BOUNDARY - MAY SLOW BROWSER)"""
     council = get_council(request, council_id)
-    loc = locations.get_all_in_council(request, council)    
+    loc = photolocations.get_all_in_council(request, council)    
 
     if council is None or loc is None:
         raise HTTPException(status_code=404, detail="Item not found")
 
-    return [Location(**l) for l in loc]
+    return [PhotoLocation(**l) for l in loc]
 
 @router.get("/search", response_model=List[Council])
 def search_council_names(request: Request, search_term: str = None):
@@ -97,7 +97,7 @@ def search_council_names(request: Request, search_term: str = None):
     return [Council(**r) for r in res]
 
 @router.post("/search/location", response_model=List[Council])
-def get_council_by_location(request: Request, location: Location):
+def get_council_by_location(request: Request, location: PhotoLocation):
     """Get a council from a location."""
     council_collection = request.app.state.db.data.councils
     res = council_collection.find({"boundary":{"$geoIntersects":{"$geometry": location.point}}})
@@ -137,7 +137,7 @@ def create_council_collections_from_geojson(request: Request, geojson_filename: 
                         "area_sqkm": float(prop['CA_AREA_SQKM']),
                         "boundary": MultiPolygon(feature['geometry']['coordinates']), #unnecessary
                         "species_occuring": [],
-                        "locations": []}
+                        "photolocations": []}
 
         councilJson['_id'] = str(ObjectId())
 

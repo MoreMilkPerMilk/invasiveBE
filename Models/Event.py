@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import List, Optional
 
-from Models.Person import Person
+from Models.User import User
 from Models.Community import Community
 from Models.Council import Council
 from Models.GeoJSONMultiPolygon import GeoJSONMultiPolygon
@@ -14,8 +14,9 @@ class Event(BaseModel):
     """
     id: str = Field(..., alias='_id')
     _id: str
+    
     name: str 
-    person: Person
+    person: User
     description: str 
     community: Optional[Community]
     council: Optional[Council]

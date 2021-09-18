@@ -3,7 +3,7 @@ from typing import List
 
 from Models.Species import Species
 
-import routers.locations
+import routers.photolocations
 
 from db.session import database_instance
 
@@ -29,7 +29,7 @@ def get_species(request: Request):
     return [Species(**s) for s in res]
 
 @router.get("/{species_id}", response_model=List[Species])
-def get_species_by_id(request: Request, species_id: int = None):
+def get_species_by_id(request: Request, species_id: str = None):
     """Get a species by species_id"""
     species_collection = request.app.state.db.data.species
 

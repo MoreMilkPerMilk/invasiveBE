@@ -13,8 +13,8 @@ from pymongo.collection import Collection
 
 
 from Models.Community import Community 
-from Models.Location import Location
-from Models.Person import Person
+from Models.PhotoLocation import PhotoLocation
+from Models.User import User
 from Models.Event import Event
 
 from Models.GeoJSONMultiPolygon import GeoJSONMultiPolygon
@@ -82,7 +82,7 @@ def get_community(request: Request, community_id: str):
     return Community(**res)
     # return [Community(**r) for r in res]
 
-@router.get("/locations", response_model=List[Location])
+@router.get("/locations", response_model=List[PhotoLocation])
 def get_community_locations(request: Request, community_id: str):
     """Get locations that are within the Community boundary (RETURNS BOUNDARY - MAY SLOW BROWSER)"""
     community = get_community(request, community_id)
@@ -94,7 +94,7 @@ def get_community_locations(request: Request, community_id: str):
     if loc is None: 
         return []
 
-    return [Location(**l) for l in loc]
+    return [PhotoLocation(**l) for l in loc]
 
 @router.get("/search", response_model=List[Community])
 def search_community_names(request: Request, search_term: str = None):
@@ -112,7 +112,7 @@ def search_community_names(request: Request, search_term: str = None):
     return [Community(**r) for r in res]
 
 @router.post("/search/location", response_model=List[Community])
-def get_community_by_location(request: Request, location: Location):
+def get_community_by_location(request: Request, location: PhotoLocation):
     """Get a community from a location."""
     community_collection = request.app.state.db.data.communities
     res = community_collection.find({"boundary":{"$geoIntersects":{"$geometry": location.point}}})
@@ -131,7 +131,7 @@ def get_community_by_location(request: Request, location: Location):
 # non council-similar stuff
 
 @router.put("/users/add", response_model=Community)
-def add_user_to_community(request: Request, community_id: str, user: Person):
+def add_user_to_community(request: Request, community_id: str, user: User):
     """Adds a user to a given community"""
     community_collection = request.app.state.db.data.communities
     
