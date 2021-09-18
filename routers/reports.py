@@ -124,4 +124,4 @@ def send_push_notification(request: Request, report_id: str, message: str):
     report = Report(**res)
 
     pusher_client = request.app.state.pusher_client
-    pusher_client.trigger("council-report-updates", report.name, {'message': message})
+    pusher_client.trigger(report.name, "update", {'message': message})
