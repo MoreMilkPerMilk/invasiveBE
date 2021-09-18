@@ -1,11 +1,12 @@
 import logging
 import uvicorn
+import pusher
 from fastapi import FastAPI, Response, status, File, UploadFile, Form, Depends
 
 from typing import *
 from db.database import database
 
-import pusher.session
+from config.settings import settings 
 
 from routers import communities, councils, users, photolocations, species, events, reports
 
@@ -16,7 +17,14 @@ log = logging.getLogger("backend-logger")
 @app.on_event("startup")
 async def startup():
     app.state.db = database().get_client()
-    app.state.pusher_client = pusher.session().get_client()
+    app.state.pusher_client = pusher.Pusher(
+        app_id = settings.pusher['app_id'],
+        key = settings.pusher['key'],
+        secret = settings.pusher['secret'],
+        cluster = settings.pusher['cluster'],
+        ssl = True
+    )
+
     # SETUP UNIQUE KEYS
     councils.set_unique_keys(app.state.db.data.councils)
     photolocations.set_unique_keys(app.state.db.data.locations)
