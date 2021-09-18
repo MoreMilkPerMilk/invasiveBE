@@ -98,7 +98,7 @@ def add_location_to_report(request: Request, report_id: str, location: PhotoLoca
     """
     reports_collection = request.app.state.db.data.reports
     
-    key = {"_id", report_id}
+    key = {"_id": report_id}
     res = reports_collection.find_one(key)
 
     if res is None:
@@ -108,3 +108,17 @@ def add_location_to_report(request: Request, report_id: str, location: PhotoLoca
     report.add_location(location)
 
     reports_collection.replace_one(key, report.dict(), upsert=True)
+
+@router.put("/sendpushnotification")
+def send_push_notification(request: Request, report_id: str):
+    """
+        Sends a push notification to all users related to a report
+    """
+    reports_collection = request.app.state.db.data.reports
+
+    res = reports_collection.find_one({"_id": report_id})
+
+    if res is None:
+        raise HTTPException(404)
+
+    

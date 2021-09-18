@@ -8,6 +8,9 @@ from Models.GeoJSONMultiPolygon import GeoJSONMultiPolygon
 from Models.PhotoLocation import PhotoLocation
 
 class Status(str, Enum):
+    """
+        Status of the Report (open / closed)
+    """
     closed = 'closed'
     open = 'open'
 
@@ -26,6 +29,7 @@ class Report(BaseModel):
     locations: List[PhotoLocation]
     notes: str 
     polygon: Optional[GeoJSONMultiPolygon] = None
+    pusher_channel: Optional[str]
 
     #idk images back from WeedInstances?
 

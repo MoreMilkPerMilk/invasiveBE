@@ -114,7 +114,7 @@ def update_location(request: Request, location_id: str, location: PhotoLocation)
     """
     photolocations_collection = request.app.state.db.data.photolocations
     
-    key = {"_id", location_id}
+    key = {"_id": location_id}
     res = photolocations_collection.find_one(key)
 
     if res is None:
