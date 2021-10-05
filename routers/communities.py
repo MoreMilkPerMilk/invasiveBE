@@ -4,6 +4,7 @@ import logging
 import geojson
 import shapely.geometry
 import shapely.ops
+import fuzz
 
 from fastapi import APIRouter, Request, HTTPException
 from typing import List
@@ -86,7 +87,7 @@ def get_community(request: Request, community_id: str):
 def get_community_locations(request: Request, community_id: str):
     """Get locations that are within the Community boundary (RETURNS BOUNDARY - MAY SLOW BROWSER)"""
     community = get_community(request, community_id)
-    loc = routers.locations.get_all_in_community(request, community)    
+    loc = routers.photolocations.get_all_in_community(request, community)    
 
     if community is None:
         raise HTTPException(status_code=404, detail="Item not found")

@@ -2,9 +2,10 @@ import logging
 import pymongo
 import uuid
 
-from fastapi import APIRouter, Request, HTTPException, File, UploadFile
+from fastapi import APIRouter, Request, HTTPException, File, UploadFile, Form
 from typing import List
 from pymongo.collection import Collection
+from bson.objectid import ObjectId
 
 from Models.Council import Council 
 from Models.PhotoLocation import PhotoLocation
@@ -85,27 +86,68 @@ def get_all_in_council(request: Request, council: Council) -> List[PhotoLocation
 
     return [PhotoLocation(**loc).dict() for loc in photolocations]
 
-@router.post("/add")
-def add_location(request: Request, point: GeoJSONMultiPolygon, file: UploadFile = File(...)):
+@router.post("/create", response_model=PhotoLocation)
+def add_location(request: Request, photolocation: PhotoLocation = None):
+    """
+    Creates a Photo-Location, (REMEMBER to use /uploadphoto)
+    Returns the id of the created photolocation
+    """
+    print("got", photolocation)
+    print("hello")
+    photolocations_collection = request.app.state.db.data.photolocations
+
+    print(photolocation.dict())
+
+    print("to insert", photolocation.dict())
+
+    res = photolocations_collection.insert_one(photolocation.dict(by_alias=True)) 
+
+    if res is None: 
+        raise HTTPException(404)
+
+    d = photolocation.dict(by_alias=True)
+    d['_id'] = res.inserted_id
+
+    return d
+
+@router.post("/uploadphoto/{photolocation_id}")
+def upload_photo(request: Request, photolocation_id: str, file: UploadFile = File(...)):
     """
     Adds a Photo-Location pair to the database
     """
     photolocations_collection = request.app.state.db.data.photolocations
 
-    location = PhotoLocation(**{"point": point, "image_filename": ""})
+    key = {"_id": photolocation_id}
+    res = photolocations_collection.find_one(key)
 
-    new_filename = uuid.uuid4()
+    print(key)
+
+    if res is None:
+        raise HTTPException(404)
+
+    print(res)
+    location = PhotoLocation(**res)
+    print(location)
+
+
+    new_filename = str(uuid.uuid4()) + "." + file.filename.split(".")[-1]
+    print("new filename", new_filename, "old", file.filename)
 
     try:
         with open(f"files/{new_filename}", "wb") as new_file: 
             new_file.write(file.file.read())
 
         location.image_filename = new_filename
-        photolocations_collection.insert_one(location.dict())
+        print("location = ", location.dict())
+        res2 = photolocations_collection.replace_one(key, location.dict(by_alias=True), upsert=True)
 
     except Exception as e:
         log.error(f"Failed to add location - {e}")
         raise HTTPException(404)
+    
+    d = location.dict()
+    
+    return d
 
 @router.put("/update")
 def update_location(request: Request, location_id: str, location: PhotoLocation):
@@ -120,7 +162,7 @@ def update_location(request: Request, location_id: str, location: PhotoLocation)
     if res is None:
         raise HTTPException(404)
         
-    photolocations_collection.replace_one(key, location.dict(), upsert=True)
+    photolocations_collection.replace_one(key, location.dict(by_alias=True), upsert=True)
 
 @router.delete("/delete/{location_id}")
 def delete_location(request: Request, location_id: str = None):

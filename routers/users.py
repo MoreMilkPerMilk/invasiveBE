@@ -55,7 +55,11 @@ def create_user(request: Request, user: User):
     users_collection = request.app.state.db.data.users
 
     #set unique keys so can't insert double ups
-    r = users_collection.insert_one(user.dict(by_alias=True))
+    try:
+        r = users_collection.insert_one(user.dict(by_alias=True))
+    except Exception as e:
+        print("There was an exception")
+        raise HTTPException(status_code=401, detail="Exception inserting user, probably was a duplicate.")
 
     if r is None:
         raise HTTPException(status_code=404, detail="Could not add user.")

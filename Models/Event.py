@@ -9,14 +9,13 @@ from Models.GeoJSONMultiPolygon import GeoJSONMultiPolygon
 
 class Event(BaseModel):
     """
-    Encapsulates a event assigned to a user. 
     This event may be owned by a council / community.
     """
     id: str = Field(..., alias='_id')
     _id: str
     
     name: str 
-    person: User
+    users: Optional[List[User]]
     description: str 
     community: Optional[Community]
     council: Optional[Council]
