@@ -2,6 +2,7 @@ import logging
 import uvicorn
 import pusher
 from fastapi import FastAPI, Response, status, File, UploadFile, Form, Depends
+from fastapi.staticfiles import StaticFiles
 
 from typing import *
 from db.database import database
@@ -40,6 +41,8 @@ app.include_router(councils.router)
 app.include_router(photolocations.router)
 app.include_router(users.router)
 app.include_router(species.router)
+
+app.mount("/files", StaticFiles(directory="files"), name="files")
 
 if __name__ == '__main__':
     uvicorn.run("app:app", host='0.0.0.0', port=8080, reload=True)
