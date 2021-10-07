@@ -64,8 +64,10 @@ def create_user(request: Request, user: User):
     if r is None:
         raise HTTPException(status_code=404, detail="Could not add user.")
 
-    user._id = r.inserted_id
-    return user
+    d = user.dict(by_alias=True)
+    d['_id'] = r.inserted_id
+
+    return d
 
 
 @router.delete("/delete", response_model=User)

@@ -4,6 +4,8 @@ import uuid
 import pymongo
 import geojson
 import shapely
+from shapely.geometry import shape
+import shapely.geometry.Point as ShapelyPoint
 
 from fastapi import APIRouter, Request, HTTPException, File, UploadFile
 from typing import List, Optional
@@ -80,6 +82,20 @@ def add_a_report(request: Request, report: Report):
     """
     reports_collection = request.app.state.db.data.reports
 
+    reports = get_all_reports(request)
+
+# doesn't actually merge, just outputs if merge possible to console.
+    if len(reports) == 0:
+        print("no reports to merge")
+    else:
+        for report_ in reports:
+            for loc in report.locations:
+                point = ShapelyPoint(loc.point.coordinates[0], loc.point.coordinates[1])
+                polygon = shape(report.polygon)
+                if polygon.contains(point):
+                    print("POSSIBLE MERGE")
+                    print(report_)
+
     if report.polygon is not None:
         log.print("hmm chosen to supply polygon")
     else:
@@ -120,7 +136,7 @@ def add_location_to_report(request: Request, report_id: str, location: PhotoLoca
     report = Report(**res)
     report.add_location(location)
 
-    reports_collection.replace_one(key, report.dict(), upsert=True)
+    reports_collection.replace_one(key, report.dict(by_alias=True), upsert=True)
 
 @router.put("/sendpushnotification")
 def send_push_notification(request: Request, report_id: str, message: str):

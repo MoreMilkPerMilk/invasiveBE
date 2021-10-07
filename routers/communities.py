@@ -272,6 +272,7 @@ def create_community(request: Request, name: str, boundary: dict, suburbs: List 
     if res is None:
         raise HTTPException(404)
 
-    community._id = res.inserted_id
+    d = community.dict(by_alias=True)
+    d['_id'] = res.inserted_id
 
-    return community
+    return d
