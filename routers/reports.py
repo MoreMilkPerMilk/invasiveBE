@@ -5,7 +5,8 @@ import pymongo
 import geojson
 import shapely
 from shapely.geometry import shape
-import shapely.geometry.Point as ShapelyPoint
+# import shapely.geometry.Point as ShapelyPoint
+import shapely.geometry as shapegeo
 
 from fastapi import APIRouter, Request, HTTPException, File, UploadFile
 from typing import List, Optional
@@ -73,7 +74,7 @@ def update_a_report(request: Request, report_id: str, report: Report):
     """
     reports_collection = request.app.state.db.data.reports
 
-    reports_collection 
+    # reports_collection 
 
 @router.post("/add", response_model=Report)
 def add_a_report(request: Request, report: Report):
@@ -85,40 +86,48 @@ def add_a_report(request: Request, report: Report):
     reports = get_all_reports(request)
 
 # doesn't actually merge, just outputs if merge possible to console.
-    if len(reports) == 0:
-        print("no reports to merge")
-    else:
-        for report_ in reports:
-            for loc in report.locations:
-                point = ShapelyPoint(loc.point.coordinates[0], loc.point.coordinates[1])
-                polygon = shape(report.polygon)
-                if polygon.contains(point):
-                    print("POSSIBLE MERGE")
-                    print(report_)
+    # if len(reports) == 0:
+    #     print("no reports to merge")
+    # else:
+    #     for report_ in reports:
+    #         for loc in report.locations:
+    #             point = shapegeo.Point(loc.point.coordinates[0], loc.point.coordinates[1])
+    #             polygon = shape(report.polygon.to_geojson())
+    #             if polygon.contains(point):
+    #                 print("POSSIBLE MERGE")
+    #                 print(report_)
 
-    if report.polygon is not None:
-        log.print("hmm chosen to supply polygon")
-    else:
+    if report.polygon is not None and False:
+        print("hmm chosen to supply polygon") #ignored
+    elif len(report.locations) >= 3:
         polygon = geojson.Polygon([(loc.point.coordinates[0], loc.point.coordinates[1]) for loc in report.locations])
         print(f"polygon = {polygon}")
+        # print(polygon.)
 
         polygon = shapely.geometry.Polygon([(loc.point.coordinates[0], loc.point.coordinates[1]) for loc in report.locations])
-        # polygon['geometry'] = polygon['geometry'].map(to_square)
-        polygon = polygon.map(to_square)
+        polygon = to_square(polygon)
+        # polygon = polygon.map(to_square)
 
-        print(polygon['geometry'])
+        # print(polygon['geometry'])
+        print(polygon)
 
-        report.polygon = polygon 
-        
-        
-    res = reports_collection.insert_one(report.dict(by_alias=True))
+        # report.polygon = GeoJSONMultiPolygon(**{'coordinates': polygon.coords[:]})
+        coords = [[float(i[0]), float(i[1])] for i in shapely.geometry.Polygon(polygon.boundary).exterior.coords[:-1]]
+        print(coords)
+        report.polygon = GeoJSONMultiPolygon(**{'coordinates': coords}) #negative one without repeat
+    
+    try:    
+        res = reports_collection.insert_one(report.dict(by_alias=True))
+    except pymongo.errors.DuplicateKeyError:
+        raise HTTPException(405, "Duplicate")
 
     if res is None:
         raise HTTPException(404)
 
-    report._id = str(res.inserted_id)
+    d = report.dict(by_alias=True)
+    d['_id'] = res.inserted_id
 
-    return report
+    return d
         
 @router.put("/addphotolocation", response_model=Report)
 def add_location_to_report(request: Request, report_id: str, location: PhotoLocation):

@@ -1,9 +1,13 @@
 from pydantic import BaseModel
 from typing import List
+from geojson import MultiPolygon
 
 class GeoJSONMultiPolygon(BaseModel):
     """
         pydantic version of geojson MultiPolygon for FastAPI
     """
-    coordinates: List[float]
+    coordinates: List[List[float]]
     type = 'MutiPolygon'
+
+    def to_geojson(self):
+        return MultiPolygon(self.coordinates)
