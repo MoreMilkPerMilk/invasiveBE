@@ -54,6 +54,7 @@ def species_search(request: Request, species_name: str = ""):
     if species_name == "" or species_name is None:
         raise HTTPException(400)
 
+    species_collection.drop_indexes()
     species_collection.create_index([("name", "text")])
     res = species_collection.find({ "$text": { "$search": species_name } })
 
