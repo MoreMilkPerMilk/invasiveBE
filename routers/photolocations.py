@@ -62,6 +62,13 @@ def get_location_by_id(request: Request, location_id: str = None):
     
     return PhotoLocation(**res)
 
+@router.get("photobaseurl/", response_model=dict)
+def get_photo_url(request: Request):
+    """
+        prepend to image_filename to get image url. 
+    """
+    return ["http://invasivesys.uqcloud.net/files/"]
+
 @router.post("/council/", response_model=List[PhotoLocation])
 def get_all_in_council(request: Request, council: Council) -> List[PhotoLocation]:
     """Get all photolocations for a council using geojson query."""
