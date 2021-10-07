@@ -72,6 +72,7 @@ def add_event(request: Request, event: Event = None):
         raise HTTPException(404)
 
     # return {"inserted_id": res.inserted_id}
+    event._id = res.inserted_id
     return event
 
 @router.delete("/delete")
