@@ -195,13 +195,13 @@ def location_near(request: Request, point: GeoJSONPoint, max_distance: float):
     
     return [PhotoLocation(**loc).dict() for loc in photolocations]
 
-@router.get("/search", response_model=List[PhotoLocation])
-def location_search(request: Request, search_term: str):
+@router.get("/filesearch", response_model=List[PhotoLocation])
+def file_search(request: Request, search_term: str):
     """Search for photolocations by a given search_term"""
     photolocations_collection = request.app.state.db.data.photolocations 
 
     #make sure is indexed
-    photolocations_collection.create_index([("name", "text")])
+    photolocations_collection.create_index([("image_filename", "text")])
     
     res = photolocations_collection.find({ "$text": { "$search": search_term } })
     
