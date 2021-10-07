@@ -78,6 +78,7 @@ def add_a_report(request: Request, report: Report):
     """
         Add a report, backend will calculate bounding polygon.
     """
+    reports_collection = request.app.state.db.data.reports
 
     if report.polygon is not None:
         log.print("hmm chosen to supply polygon")
@@ -90,6 +91,18 @@ def add_a_report(request: Request, report: Report):
         polygon = polygon.map(to_square)
 
         print(polygon['geometry'])
+
+        report.polygon = polygon 
+        
+        
+    res = reports_collection.insert_one(report.dict(by_alias=True))
+
+    if res is None:
+        raise HTTPException(404)
+
+    report._id = str(res.inserted_id)
+
+    return report
         
 @router.put("/addphotolocation", response_model=Report)
 def add_location_to_report(request: Request, report_id: str, location: PhotoLocation):
