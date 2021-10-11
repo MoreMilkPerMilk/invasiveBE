@@ -84,15 +84,23 @@ def get_council_photolocations(request: Request, council_id: int):
 @router.get("/search", response_model=List[Council])
 def search_council_names(request: Request, search_term: str = None):
     """Search for councils by a given search_term"""
+    print("h")
     council_collection = request.app.state.db.data.councils
 
+    print("search", search_term)
     #check
+    # council_collection.create_index([("name", "text")])
+    council_collection.drop_indexes()
     council_collection.create_index([("name", "text")])
-
     res = council_collection.find({ "$text": { "$search": search_term } })
+
+
+    # res = council_collection.find({ "$text": { "$search": search_term } })
 
     if res is None: 
         raise HTTPException(404)
+
+    print(res)
 
     return [Council(**r) for r in res]
 
