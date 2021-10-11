@@ -107,7 +107,10 @@ def add_location(request: Request, photolocation: PhotoLocation = None):
 
     print("to insert", photolocation.dict())
 
-    res = photolocations_collection.insert_one(photolocation.dict(by_alias=True)) 
+    try:
+        res = photolocations_collection.insert_one(photolocation.dict(by_alias=True)) 
+    except pymongo.errors.DuplicateKeyError as e:
+        raise HTTPException(404, "Duplicate key error")
 
     if res is None: 
         raise HTTPException(404)
