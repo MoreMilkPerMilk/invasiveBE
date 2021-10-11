@@ -26,7 +26,7 @@ class Report(BaseModel):
     name: str #unsure 
     species_id: str
     status: Status 
-    locations: List[PhotoLocation]
+    locations: Optional[List[PhotoLocation]]
     notes: str 
     polygon: Optional[GeoJSONMultiPolygon] = None
     # pusher_event: Optional[str]
