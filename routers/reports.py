@@ -40,6 +40,26 @@ def set_unique_keys(reports_collection: Collection):
         unique=True
     )
 
+def process_polygon(report: Report):
+    if len(report.locations) >= 3:
+        polygon = geojson.Polygon([(loc.point.coordinates[0], loc.point.coordinates[1]) for loc in report.locations])
+        print(f"polygon = {polygon}")
+        # print(polygon.)
+
+        polygon = shapely.geometry.Polygon([(loc.point.coordinates[0], loc.point.coordinates[1]) for loc in report.locations])
+        polygon = to_square(polygon)
+        # polygon = polygon.map(to_square)
+
+        # print(polygon['geometry'])
+        print(polygon)
+
+        # report.polygon = GeoJSONMultiPolygon(**{'coordinates': polygon.coords[:]})
+        coords = [[float(i[0]), float(i[1])] for i in shapely.geometry.Polygon(polygon.boundary).exterior.coords[:-1]]
+        print(coords)
+        report.polygon = GeoJSONMultiPolygon(**{'coordinates': coords})
+    
+    return report
+
 def to_square(polygon):
     """
         For shapely boundaries
@@ -144,6 +164,8 @@ def add_location_to_report(request: Request, report_id: str, location: PhotoLoca
 
     report = Report(**res)
     report.add_location(location)
+    
+    report = process_polygon(report)
 
     reports_collection.replace_one(key, report.dict(by_alias=True), upsert=True)
 
@@ -172,6 +194,7 @@ def add_photolocation_to_report(request: Request, report_id: str, location_id: s
 
     report.add_location(location)
 
+    report = process_polygon(report)
     reports_collection.replace_one(key, report.dict(by_alias=True), upsert=True)
 
     return report.dict(by_alias=True)
