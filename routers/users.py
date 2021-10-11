@@ -89,6 +89,31 @@ def update_user(request: Request, user_id: str, report: Report):
 
     user = User(**res)
     user.add_report(report)
-    users_collection.replace_one(key, user.dict(), upsert=True)
+    users_collection.replace_one(key, user.dict(by_alias=True), upsert=True)
 
     return user
+
+@router.put("/addreportbyid", response_model=User)
+def update_user(request: Request, user_id: str, report_id: str):
+    """Adds a Report to a user"""
+    users_collection = request.app.state.db.data.users
+    reports_collection = request.app.state.db.data.reports
+    
+    key = {"_id": user_id}
+    res = users_collection.find_one(key)
+    report_key = {"_id": report_id}
+    report_res = reports_collection.find_one(report_key)
+
+    if res is None:
+        raise HTTPException(404, "User not found")
+
+    user = User(**res)
+
+    if report_res is None:
+        raise HTTPException(404, "Report not found")
+
+    report = Report(**report_res)
+    user.add_report(report)
+    users_collection.replace_one(key, user.dict(by_alias=True), upsert=True)
+
+    return user.dict(by_alias=True)

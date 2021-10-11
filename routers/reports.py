@@ -119,7 +119,7 @@ def add_a_report(request: Request, report: Report):
     try:    
         res = reports_collection.insert_one(report.dict(by_alias=True))
     except pymongo.errors.DuplicateKeyError:
-        raise HTTPException(405, "Duplicate")
+        raise HTTPException(404, "Tried to insert a duplicate.")
 
     if res is None:
         raise HTTPException(404)
