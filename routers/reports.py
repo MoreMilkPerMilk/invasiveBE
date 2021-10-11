@@ -147,6 +147,35 @@ def add_location_to_report(request: Request, report_id: str, location: PhotoLoca
 
     reports_collection.replace_one(key, report.dict(by_alias=True), upsert=True)
 
+@router.put("/addphotolocationbyid", response_model=Report)
+def add_photolocation_to_report(request: Request, report_id: str, location_id: str):
+    """
+        Adds a Photo-Location pair to a Report
+    """
+    reports_collection = request.app.state.db.data.reports
+    photolocations_collection = request.app.state.db.data.photolocations
+    
+    key = {"_id": report_id}
+    res = reports_collection.find_one(key)
+
+    if res is None:
+        raise HTTPException(404, detail="report not found")
+
+    report = Report(**res)
+
+    location_res = photolocations_collection.find_one({"_id": location_id})
+
+    if location_res is None: 
+        raise HTTPException(404, detail="location not found")
+
+    location = PhotoLocation(**location_res)
+
+    report.add_location(location)
+
+    reports_collection.replace_one(key, report.dict(by_alias=True), upsert=True)
+
+    return report.dict(by_alias=True)
+
 @router.put("/sendpushnotification")
 def send_push_notification(request: Request, report_id: str, message: str):
     """
