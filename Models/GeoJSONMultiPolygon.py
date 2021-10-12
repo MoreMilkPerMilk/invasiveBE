@@ -6,7 +6,7 @@ class GeoJSONMultiPolygon(BaseModel):
     """
         pydantic version of geojson MultiPolygon for FastAPI
     """
-    coordinates: List[List[float]]
+    coordinates: List[List[List[float]]]
     type = 'MultiPolygon'
 
     def to_geojson(self):
