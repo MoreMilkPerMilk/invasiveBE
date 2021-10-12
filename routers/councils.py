@@ -131,7 +131,7 @@ def get_councils_by_polygon(request: Request, polygon: GeoJSONMultiPolygon):
 def get_council_by_location(request: Request, location: PhotoLocation):
     """Get a council from a location."""
     council_collection = request.app.state.db.data.councils
-    res = council_collection.find({"boundary":{"$geoIntersects":{"$geometry": location.point}}})
+    res = council_collection.find({"boundary":{"$geoIntersects":{"$geometry": location.point.dict()}}})
 
     if res is None:
         raise HTTPException(status_code=404, detail="Item not found")
