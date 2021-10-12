@@ -197,7 +197,7 @@ def add_photolocation_to_report(request: Request, report_id: str, location_id: s
     report = process_polygon(report)
     reports_collection.replace_one(key, report.dict(by_alias=True), upsert=True)
 
-    return report.dict(by_alias=True)
+    return report
 
 @router.put("/sendpushnotification")
 def send_push_notification(request: Request, report_id: str, message: str):
