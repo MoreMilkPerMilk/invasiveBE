@@ -1,6 +1,7 @@
 import json
 import pymongo
 import logging
+import shapely
 
 from fastapi import APIRouter, Request, HTTPException
 from typing import List
@@ -106,9 +107,9 @@ def search_council_names(request: Request, search_term: str = None):
     return [Council(**r) for r in res]
 
 @router.post("/search/polygon", response_model=List[Council])
-def get_councils_by_polygon(request: Request, polygon: GeoJSONMultiPolygon):
-    """Get a council from a polygon."""
-    council_collection = request.app.state.db.data.councils
+def get_councils_by_polygon(request: Request, polygon: GeoJSONMultiPolygon, simplify_tolerance: float):
+    """Get a council from a polygon. simplify_tolerance specifies the max distance from the true polygon for simplification."""
+    council_collection = request.app.state.db.data.councils 
 
     d = polygon.to_geojson()
     d['type'] = "Polygon"
@@ -120,7 +121,31 @@ def get_councils_by_polygon(request: Request, polygon: GeoJSONMultiPolygon):
     if res is None:
         raise HTTPException(status_code=404, detail="No items found")
 
-    councils = [Council(**c) for c in res]
+    # councils = [Council(**c) for c in res]
+    councils = []
+    for c in res:
+
+        g = [x.buffer(0).simplify(simplify_tolerance, preserve_topology=False) for x in shapely.geometry.shape(c['boundary'])]
+        coords = [[[float(i[0]), float(i[1])] for i in poly.exterior.coords[:-1]] for poly in g]
+        c['boundary']['coordinates'] = coords
+        print(c)
+        try:
+            council = Council(**c)
+            councils.append(council)
+        except Exception:
+            print("exception")
+
+        # print(g)
+        # print(coords)
+        # return []
+        # print("council boundary", council.boundary)
+        # geoPolygon = GeoJSONMultiPolygon(**council.boundary)
+
+        # print("coordinates", council.boundary.coordinates)
+
+        # shapely.geometry.Polygon([(a[0], a[1]) for a in council.boundary.coordinates[0]])
+
+        # councils.append()
 
     if len(councils) == 0:
         raise HTTPException(status_code=404, detail="Found no councils")
