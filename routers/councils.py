@@ -10,6 +10,7 @@ from pymongo.collection import Collection
 
 from Models.Council import Council 
 from Models.PhotoLocation import PhotoLocation
+from Models.GeoJSONMultiPolygon import GeoJSONMultiPolygon
 
 import routers.photolocations as photolocations
 
@@ -103,6 +104,22 @@ def search_council_names(request: Request, search_term: str = None):
     print(res)
 
     return [Council(**r) for r in res]
+
+@router.post("/search/polygon", response_model=List[Council])
+def get_councils_by_polygon(request: Request, polygon: GeoJSONMultiPolygon):
+    """Get a council from a polygon."""
+    council_collection = request.app.state.db.data.councils
+    res = council_collection.find({"boundary":{"$geoIntersects":{"$geometry": polygon}}})
+
+    if res is None:
+        raise HTTPException(status_code=404, detail="No items found")
+
+    councils = [Council(**c) for c in res]
+
+    if len(councils) == 0:
+        raise HTTPException(status_code=404, detail="Found no councils")
+    
+    return councils
 
 @router.post("/search/location", response_model=List[Council])
 def get_council_by_location(request: Request, location: PhotoLocation):
