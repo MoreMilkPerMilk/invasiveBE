@@ -54,7 +54,7 @@ def process_polygon(report: Report):
         print(polygon)
 
         # report.polygon = GeoJSONMultiPolygon(**{'coordinates': polygon.coords[:]})
-        coords = [[float(i[0]), float(i[1])] for i in shapely.geometry.Polygon(polygon.boundary).exterior.coords[:-1]]
+        coords = [[[float(i[0]), float(i[1])] for i in shapely.geometry.Polygon(polygon.boundary).exterior.coords[:-1]]]
         print(coords)
         report.polygon = GeoJSONMultiPolygon(**{'coordinates': coords})
     
