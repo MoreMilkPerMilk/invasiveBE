@@ -109,7 +109,13 @@ def search_council_names(request: Request, search_term: str = None):
 def get_councils_by_polygon(request: Request, polygon: GeoJSONMultiPolygon):
     """Get a council from a polygon."""
     council_collection = request.app.state.db.data.councils
-    res = council_collection.find({"boundary":{"$geoIntersects":{"$geometry": polygon}}})
+
+    d = polygon.to_geojson()
+    d['type'] = "Polygon"
+    
+    res = council_collection.find({"boundary":{"$geoIntersects":{"$geometry": d}}})
+
+    # prit
 
     if res is None:
         raise HTTPException(status_code=404, detail="No items found")
