@@ -2,6 +2,7 @@ import json
 import pymongo
 import logging
 import shapely
+import numpy as np
 
 from fastapi import APIRouter, Request, HTTPException
 from typing import List
@@ -126,9 +127,21 @@ def get_councils_by_polygon(request: Request, polygon: GeoJSONMultiPolygon, simp
     for c in res:
 
         g = [x.buffer(0).simplify(simplify_tolerance, preserve_topology=False) for x in shapely.geometry.shape(c['boundary'])]
-        coords = [[[float(i[0]), float(i[1])] for i in poly.exterior.coords[:-1]] for poly in g]
+        # if isinstance(poly, shapely.geometry.MultiPolygon
+        coords = []
+        for poly in g:
+            if isinstance(poly, shapely.geometry.MultiPolygon):
+                for poly2 in poly:
+                    coords.append([[float(i[0]), float(i[1])] for i in poly2.exterior.coords[:-1]])
+            else:
+                #print("not MultiPolygon")
+                #print(isinstance(poly, shapely.geometry.Polygon))
+                coords.append([[float(i[0]), float(i[1])] for i in poly.exterior.coords[:-1]])
+
         c['boundary']['coordinates'] = coords
+
         print(c)
+        print(np.array(c).shape)
         try:
             council = Council(**c)
             councils.append(council)
