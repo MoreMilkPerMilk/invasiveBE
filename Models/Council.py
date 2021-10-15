@@ -16,8 +16,8 @@ class Council(BaseModel):
     _id: str
     name: str
     species_occuring: Optional[List[Species]] = []
-    # boundary: Optional[dict]
-    boundary: Optional[GeoJSONMultiPolygon]
+    boundary: Optional[dict]
+    # boundary: Optional[GeoJSONMultiPolygon]
     lga_code: int 
     abbreviated_name: str
     area_sqkm: float
