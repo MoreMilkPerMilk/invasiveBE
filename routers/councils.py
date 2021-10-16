@@ -122,43 +122,29 @@ def get_councils_by_polygon(request: Request, polygon: GeoJSONMultiPolygon, simp
     if res is None:
         raise HTTPException(status_code=404, detail="No items found")
 
-    # councils = [Council(**c) for c in res]
     councils = []
     for c in res:
+        if 'boundary' in c:
+            try:
+                g = [x.buffer(0).simplify(simplify_tolerance, preserve_topology=False) for x in shapely.geometry.shape(c['boundary'])]
+            except Exception: 
+                print("couldn't load boundary")
 
-        g = [x.buffer(0).simplify(simplify_tolerance, preserve_topology=False) for x in shapely.geometry.shape(c['boundary'])]
-        # if isinstance(poly, shapely.geometry.MultiPolygon
-        coords = []
-        for poly in g:
-            if isinstance(poly, shapely.geometry.MultiPolygon):
-                for poly2 in poly:
-                    coords.append([[float(i[0]), float(i[1])] for i in poly2.exterior.coords[:-1]])
-            else:
-                #print("not MultiPolygon")
-                #print(isinstance(poly, shapely.geometry.Polygon))
-                coords.append([[float(i[0]), float(i[1])] for i in poly.exterior.coords[:-1]])
+            coords = []
+            for poly in g:
+                if isinstance(poly, shapely.geometry.MultiPolygon):
+                    for poly2 in poly:
+                        coords.append([[float(i[0]), float(i[1])] for i in poly2.exterior.coords[:-1]])
+                else:
+                    coords.append([[float(i[0]), float(i[1])] for i in poly.exterior.coords[:-1]])
 
-        c['boundary']['coordinates'] = coords
+            c['boundary']['coordinates'] = coords
 
-        print(c)
-        print(np.array(c).shape)
-        try:
-            council = Council(**c)
-            councils.append(council)
-        except Exception:
-            print("exception")
-
-        # print(g)
-        # print(coords)
-        # return []
-        # print("council boundary", council.boundary)
-        # geoPolygon = GeoJSONMultiPolygon(**council.boundary)
-
-        # print("coordinates", council.boundary.coordinates)
-
-        # shapely.geometry.Polygon([(a[0], a[1]) for a in council.boundary.coordinates[0]])
-
-        # councils.append()
+            try:
+                council = Council(**c)
+                councils.append(council)
+            except Exception:
+                print("exception")
 
     if len(councils) == 0:
         raise HTTPException(status_code=404, detail="Found no councils")
