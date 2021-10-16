@@ -5,6 +5,8 @@ from fastapi import APIRouter, Request, HTTPException
 from typing import List
 from pymongo.collection import Collection
 import numpy as np
+from bson.objectid import ObjectId
+
 
 from Models.Council import Council 
 from Models.PhotoLocation import PhotoLocation
@@ -52,13 +54,20 @@ def get_user_by_id(request: Request, user_id: str = None):
 
     return None if user is None else User(**user)
 
-@router.get("/{mac_address}", response_model=User)
+@router.get("/mac/{mac_address}", response_model=User)
 def get_user_by_mac_address(request: Request, mac_address: str = None):
     """Get a user by mac address"""
+    if mac_address is None: 
+        raise HTTPException(status_code=404, detail="No mac_address")
+    
+    users_collection = request.app.state.db.data.users
+    user = users_collection.find_one({"mac_address": mac_address})
+
+    return None if user is None else User(**user)
 
 @router.post("/createbymacaddress/{mac_address}", response_model=User)
 def create_user_by_mac_address(request: Request, mac_address: str = None):
-    """Create a user by mac address"""
+    """Create a user by mac address. If already exists, will return."""
     users_collection = request.app.state.db.data.users
 
     if mac_address is None:
@@ -67,8 +76,10 @@ def create_user_by_mac_address(request: Request, mac_address: str = None):
     first_names = ["Jane", "John", "James", "Mary"]
     last_names = ["Smith", "Doe"]
 
-    user = User(**{'first_name': np.random.choice(first_names, 1), 
-                'last_name': np.random.choice(last_names, 1),
+    user = User(**{
+                '_id': str(ObjectId()),
+                'first_name': str(np.random.choice(first_names)), 
+                'last_name': str(np.random.choice(last_names)),
                 'date_joined': int(time.time()), 
                 'reports': [], 
                 'mac_address': mac_address,
@@ -77,8 +88,9 @@ def create_user_by_mac_address(request: Request, mac_address: str = None):
     try:
         r = users_collection.insert_one(user.dict(by_alias=True))
     except Exception as e:
-        print("There was an exception")
-        raise HTTPException(status_code=401, detail="Exception inserting user, probably was a duplicate.")
+        return get_user_by_mac_address(request, mac_address)
+        # print("There was an exception")
+        # raise HTTPException(status_code=401, detail="Exception inserting user, probably was a duplicate.")
 
     d = user.dict(by_alias=True) 
     d['_id'] = r.inserted_id 
