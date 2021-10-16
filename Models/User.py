@@ -22,4 +22,5 @@ class User(BaseModel):
         """
             Add a report to this user
         """
-        self.reports.add(report)
+        # self.reports.add(report)
+        self.reports.append(report)

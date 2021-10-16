@@ -145,7 +145,7 @@ def get_councils_by_polygon(request: Request, polygon: GeoJSONMultiPolygon, simp
             council = Council(**c)
             councils.append(council)
         except Exception:
-            print("exception")
+            print("Exception appending council.")
 
     if len(councils) == 0:
         raise HTTPException(status_code=404, detail="Found no councils")
