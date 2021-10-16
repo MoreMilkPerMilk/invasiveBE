@@ -103,7 +103,7 @@ def add_a_report(request: Request, report: Report):
     """
     reports_collection = request.app.state.db.data.reports
 
-    reports = get_all_reports(request)
+    # reports = get_all_reports(request)
 
 # doesn't actually merge, just outputs if merge possible to console.
     # if len(reports) == 0:

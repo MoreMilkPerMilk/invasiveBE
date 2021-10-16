@@ -14,7 +14,9 @@ from routers.photolocations import location_near
 
 # import bson
 
-BASE_URL = "http://invasivesys.uqcloud.net"
+# BASE_URL = "http://invasivesys.uqcloud.net"
+BASE_URL = 'http://35.244.125.224'
+
 
 START_DIR = "/home/djamahl/Documents/Code/resnet_weeds/ImageNet_ResNet_Tensorflow2.0/images_test/"
 
