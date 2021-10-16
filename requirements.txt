@@ -11,3 +11,4 @@ shapely
 numpy
 python-multipart
 gunicorn
+fuzz
