@@ -1,6 +1,7 @@
 import requests
 import os
 import json
+import time
 from Models.Report import Report
 from Models.Species import Species 
 import numpy as np
@@ -40,6 +41,7 @@ def add_photolocation(location: PhotoLocation):
     # print(r.text)
     j = json.loads(r.text)
     j['_id'] = j['id']
+    time.sleep(1)
     return PhotoLocation(**j)
 
 # def create_report()
@@ -61,6 +63,8 @@ def find_species(search_term):
 
     # print("json decoded", j[0])
     species = Species(**j[0])
+
+    time.sleep(1)
 
     return species
 
@@ -85,6 +89,8 @@ def add_location_to_report(report: Report, location: PhotoLocation):
     r = requests.put(url, params=params)
 
     print(r.text)
+    time.sleep(1)
+
     return Report(**json.loads(r.text))
 
 # def (location: PhotoLocation):

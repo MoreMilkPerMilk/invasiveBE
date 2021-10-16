@@ -13,8 +13,10 @@ class User(BaseModel):
 
     first_name: str
     last_name: str
-    date_joined: str
+    date_joined: Optional[int]
     reports: Optional[List[Report]]
+    mac_address: Optional[str]
+    added_details: bool
 
     def add_report(self, report: Report):
         """

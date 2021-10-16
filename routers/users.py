@@ -1,8 +1,10 @@
 import pymongo
+import time
 
 from fastapi import APIRouter, Request, HTTPException
 from typing import List
 from pymongo.collection import Collection
+import numpy as np
 
 from Models.Council import Council 
 from Models.PhotoLocation import PhotoLocation
@@ -21,12 +23,13 @@ router = APIRouter(
 
 def set_unique_keys(location_collection: Collection):
     """
-        Sets users_collection to be uniquely identified by compound 'first_name', 'last_name', '_id' ASC
+        Sets users_collection to be uniquely identified by compound 'first_name', 'last_name', '_id', 'mac_address' ASC
     """
     location_collection.create_index([
         ("_id", pymongo.ASCENDING),
         ("first_name", pymongo.ASCENDING),
-        ("last_name", pymongo.ASCENDING)
+        ("last_name", pymongo.ASCENDING),
+        ("mac_address", pymongo.ASCENDING)
     ],
         unique=True
     )
@@ -49,10 +52,46 @@ def get_user_by_id(request: Request, user_id: str = None):
 
     return None if user is None else User(**user)
 
+@router.get("/{mac_address}", response_model=User)
+def get_user_by_mac_address(request: Request, mac_address: str = None):
+    """Get a user by mac address"""
+
+@router.post("/createbymacaddress/{mac_address}", response_model=User)
+def create_user_by_mac_address(request: Request, mac_address: str = None):
+    """Create a user by mac address"""
+    users_collection = request.app.state.db.data.users
+
+    if mac_address is None:
+        return HTTPException(400, "No mac address")
+
+    first_names = ["Jane", "John", "James", "Mary"]
+    last_names = ["Smith", "Doe"]
+
+    user = User(**{'first_name': np.random.choice(first_names, 1), 
+                'last_name': np.random.choice(last_names, 1),
+                'date_joined': int(time.time()), 
+                'reports': [], 
+                'mac_address': mac_address,
+                'added_details': False})
+
+    try:
+        r = users_collection.insert_one(user.dict(by_alias=True))
+    except Exception as e:
+        print("There was an exception")
+        raise HTTPException(status_code=401, detail="Exception inserting user, probably was a duplicate.")
+
+    d = user.dict(by_alias=True) 
+    d['_id'] = r.inserted_id 
+
+    return d
+
 @router.post("/create", response_model=User)
 def create_user(request: Request, user: User):
-    """Create a user from User Model !!!"""
+    """Create a user from User Model !!! PLZ CREATE FROM MAC ADDRESS THEN UPDATE THANKS, OR SUPPLY MAC ADDRESS"""
     users_collection = request.app.state.db.data.users
+
+    user.date_joined = int(time.time())
+    user.mac_address = request.g
 
     #set unique keys so can't insert double ups
     try:
@@ -77,7 +116,7 @@ def delete_user(request: Request, user_id: str):
     users_collection.delete_many({"_id": user_id})
 
 @router.put("/add_report", response_model=User)
-def update_user(request: Request, user_id: str, report: Report):
+def add_report(request: Request, user_id: str, report: Report):
     """Adds a Report to a user"""
     users_collection = request.app.state.db.data.users
     
@@ -94,7 +133,7 @@ def update_user(request: Request, user_id: str, report: Report):
     return user
 
 @router.put("/addreportbyid", response_model=User)
-def update_user(request: Request, user_id: str, report_id: str):
+def add_report_by_id(request: Request, user_id: str, report_id: str):
     """Adds a Report to a user"""
     users_collection = request.app.state.db.data.users
     reports_collection = request.app.state.db.data.reports
@@ -114,6 +153,21 @@ def update_user(request: Request, user_id: str, report_id: str):
 
     report = Report(**report_res)
     user.add_report(report)
+    users_collection.replace_one(key, user.dict(by_alias=True), upsert=True)
+
+    return user.dict(by_alias=True)
+
+@router.put("/update", response_model=User)
+def add_report_by_id(request: Request, user: User):
+    """Adds a Report to a user"""
+    users_collection = request.app.state.db.data.users
+    
+    key = {"_id": user._id}
+    res = users_collection.find_one(key)
+
+    if res is None:
+        raise HTTPException(404, "User not found")
+
     users_collection.replace_one(key, user.dict(by_alias=True), upsert=True)
 
     return user.dict(by_alias=True)
