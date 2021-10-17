@@ -128,6 +128,53 @@ def get_community_by_location(request: Request, location: PhotoLocation):
     
     return communities
 
+@router.post("/search/polygon", response_model=List[Community])
+def get_communities_by_polygon(request: Request, polygon: GeoJSONMultiPolygon, simplify_tolerance: float):
+    """Get a community from a polygon. simplify_tolerance specifies the max distance from the true polygon for simplification."""
+    community_collection = request.app.state.db.data.communities
+
+
+    d = polygon.to_geojson()
+    d['type'] = "Polygon"
+    
+    res = community_collection.find({"boundary":{"$geoIntersects":{"$geometry": d}}})
+
+    # prit
+
+    if res is None:
+        raise HTTPException(status_code=404, detail="No items found")
+
+    communities = []
+    
+    for c in res:
+        try:
+            g = [x.buffer(0).simplify(simplify_tolerance, preserve_topology=False) for x in shapely.geometry.shape(c['boundary'])]
+        except Exception: 
+            print("couldn't load boundary, probably fine :)")
+            continue
+
+        coords = []
+        for poly in g:
+            if isinstance(poly, shapely.geometry.MultiPolygon):
+                for poly2 in poly:
+                    coords.append([[float(i[0]), float(i[1])] for i in poly2.exterior.coords[:-1]])
+            else:
+                coords.append([[float(i[0]), float(i[1])] for i in poly.exterior.coords[:-1]])
+
+        c['boundary']['coordinates'] = coords
+
+        try:
+            community = Community(**c)
+            communities.append(community)
+        except Exception:
+            print("Exception appending community.")
+
+    if len(communities) == 0:
+        raise HTTPException(status_code=404, detail="Found no communities")
+    
+    return communities
+
+
 #############################################
 # non council-similar stuff
 
