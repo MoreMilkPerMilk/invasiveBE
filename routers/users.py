@@ -23,11 +23,12 @@ router = APIRouter(
     responses={404: {"description": "Not found"}}
 )
 
-def set_unique_keys(location_collection: Collection):
+def set_unique_keys(user_collection: Collection):
     """
         Sets users_collection to be uniquely identified by compound 'first_name', 'last_name', '_id', 'mac_address' ASC
     """
-    location_collection.create_index([
+    user_collection.drop_indexes()
+    user_collection.create_index([
         ("_id", pymongo.ASCENDING),
         ("first_name", pymongo.ASCENDING),
         ("last_name", pymongo.ASCENDING),
@@ -69,6 +70,8 @@ def get_user_by_mac_address(request: Request, mac_address: str = None):
 def create_user_by_mac_address(request: Request, mac_address: str = None):
     """Create a user by mac address. If already exists, will return."""
     users_collection = request.app.state.db.data.users
+
+    set_unique_keys(users_collection)
 
     if mac_address is None:
         return HTTPException(400, "No mac address")
