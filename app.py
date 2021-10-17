@@ -9,7 +9,7 @@ from db.database import database
 
 from config.settings import settings 
 
-from routers import communities, councils, users, photolocations, species, events, reports
+from routers import communities, councils, landcare, users, photolocations, species, events, reports
 
 app = FastAPI()
 
@@ -33,6 +33,7 @@ async def startup():
     users.set_unique_keys(app.state.db.data.users)
     communities.set_unique_keys(app.state.db.data.communities)
     reports.set_unique_keys(app.state.db.data.events)
+    
 
 app.include_router(communities.router)
 app.include_router(events.router)
@@ -41,8 +42,10 @@ app.include_router(councils.router)
 app.include_router(photolocations.router)
 app.include_router(users.router)
 app.include_router(species.router)
+app.include_router(landcare.router)
+
 
 app.mount("/files", StaticFiles(directory="files"), name="files")
 
 if __name__ == '__main__':
-    uvicorn.run("app:app", host='0.0.0.0', port=80, reload=True)
+    uvicorn.run("app:app", host='0.0.0.0', port=8080, reload=True)
