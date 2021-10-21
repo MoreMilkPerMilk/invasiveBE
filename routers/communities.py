@@ -4,7 +4,8 @@ import logging
 import geojson
 import shapely.geometry
 import shapely.ops
-import fuzz
+# import fuzz
+from fuzzywuzzy import fuzz
 
 from fastapi import APIRouter, Request, HTTPException
 from typing import List
@@ -147,22 +148,6 @@ def get_communities_by_polygon(request: Request, polygon: GeoJSONMultiPolygon, s
     communities = []
     
     for c in res:
-        try:
-            g = [x.buffer(0).simplify(simplify_tolerance, preserve_topology=False) for x in shapely.geometry.shape(c['boundary'])]
-        except Exception: 
-            print("couldn't load boundary, probably fine :)")
-            continue
-
-        coords = []
-        for poly in g:
-            if isinstance(poly, shapely.geometry.MultiPolygon):
-                for poly2 in poly:
-                    coords.append([[float(i[0]), float(i[1])] for i in poly2.exterior.coords[:-1]])
-            else:
-                coords.append([[float(i[0]), float(i[1])] for i in poly.exterior.coords[:-1]])
-
-        c['boundary']['coordinates'] = coords
-
         try:
             community = Community(**c)
             communities.append(community)
