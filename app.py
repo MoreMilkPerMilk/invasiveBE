@@ -2,6 +2,7 @@ import logging
 import uvicorn
 import pusher
 from fastapi import FastAPI, Response, status, File, UploadFile, Form, Depends
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from typing import *
@@ -12,6 +13,8 @@ from config.settings import settings
 from routers import communities, councils, landcare, users, photolocations, species, events, reports
 
 app = FastAPI()
+
+origins = ['*']
 
 log = logging.getLogger("backend-logger")
 
@@ -46,6 +49,16 @@ app.include_router(landcare.router)
 
 
 app.mount("/files", StaticFiles(directory="files"), name="files")
+
+# cors stuff
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_cridentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
 if __name__ == '__main__':
     uvicorn.run("app:app", host='0.0.0.0', port=8080, reload=True)
