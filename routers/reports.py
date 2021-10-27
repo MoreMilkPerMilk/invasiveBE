@@ -247,6 +247,11 @@ def add_photolocation_to_report(request: Request, report_id: str, location_id: s
             print("add to other report")
             print("old", report)
             print("new", best_report)
+
+            if len(report.locations) == 0:
+                #scary
+                delete_report(request, report.id)
+
             report = best_report
             key = {"_id": best_report.id}
                     
