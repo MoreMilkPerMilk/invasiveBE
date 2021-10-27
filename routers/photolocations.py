@@ -1,4 +1,5 @@
 import logging
+from Models.Address import Address
 import pymongo
 import uuid
 
@@ -6,6 +7,7 @@ from fastapi import APIRouter, Request, HTTPException, File, UploadFile, Form
 from typing import List
 from pymongo.collection import Collection
 from bson.objectid import ObjectId
+from geopy.geocoders import Nominatim
 
 from Models.Council import Council 
 from Models.PhotoLocation import PhotoLocation
@@ -216,3 +218,18 @@ def file_search(request: Request, search_term: str):
     res = photolocations_collection.find({ "$text": { "$search": search_term } })
     
     return [] if res is None else [PhotoLocation(**r) for r in res]
+
+@router.post("/getaddress", response_model=dict)
+def get_address_for_photolocation(request: Request, photolocation: PhotoLocation):
+    """Get an address for a photolocation"""
+
+    geolocator = Nominatim(user_agent="invasiveML")
+    # address, (latitude, longitude) = geolocator.reverse("40.752067, -73.977578")
+# f"{photolocation.point.coordinates[0]}, {photolocation.point.coordinates[1]}"
+    str = f"({photolocation.point.coordinates[0]}, {photolocation.point.coordinates[1]})"
+    print(str)
+    address, (latitude, longitude) = geolocator.reverse(str)
+
+    address = Address(**{'address': address})
+    
+    return address

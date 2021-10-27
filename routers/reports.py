@@ -143,8 +143,6 @@ def update_a_report(request: Request, report_id: str, report: Report):
 
     if res is None:
         raise HTTPException(404)
-
-    report = Report(**res)
     
     report = process_polygon(report)
 
@@ -240,13 +238,15 @@ def add_photolocation_to_report(request: Request, report_id: str, location_id: s
                             (location.point.coordinates[1],location.point.coordinates[0])])
                 line2 = transform(project, line1)
 
-                if line2.length <= longest and len(report_.locations) > most_locations:
+                if line2.length <= longest and len(report_.locations) > most_locations and report_.species_id == report.species_id:
                     best_report = report_
                     longest = line2.length
 
         if best_report is not None:
             #add to this report instead :)
             print("add to other report")
+            print("old", report)
+            print("new", best_report)
             report = best_report
             key = {"_id": best_report.id}
                     
